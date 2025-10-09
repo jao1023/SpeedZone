@@ -31,6 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $numero_clean = preg_replace('/\D/', '', $numero);
     $numero_int = (int)$numero_clean;
 
+
+    
+
     // Validação
     if (strlen($cep_clean) !== 8) {
         $error = "Por favor, insira um CEP válido com 8 dígitos.";
