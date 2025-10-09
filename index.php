@@ -11,6 +11,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,6 +23,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
+
 <body>
     <header class="navbar">
         <div class="logo">
@@ -69,7 +71,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
                 <input type="text" placeholder="Pesquisa" class="search-input">
                 <button class="search-btn">Procurar</button>
             </div>
-            
+
             <div class="product-grid">
                 <div class="product-card">
                     <img src="https://i.imgur.com/vHqQ9zG.png" alt="Produto 1" class="product-img">
@@ -110,7 +112,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
             </div>
         </section>
     </main>
-    
+
     <script src="carrossel.js"></script>
 </body>
+
 </html>

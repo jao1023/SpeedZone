@@ -6,7 +6,7 @@ session_start();
 
 // Incluir Conexão
 // Assume-se que 'connection.php' define a variável de conexão como $conn
-require_once 'connection.php'; 
+require_once 'connection.php';
 
 $error = '';
 $success = '';
@@ -18,20 +18,20 @@ if (isset($_GET['registered']) && $_GET['registered'] == 'success') {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
+
     // Coletar e Limpar Dados do Formulário
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    
+
     $email_input = htmlspecialchars($email); // Repopula o campo em caso de erro
 
     // 2. Validação e Busca no Banco
     if (empty($email) || empty($password)) {
         $error = "Por favor, preencha todos os campos.";
     } else {
-        
+
         $sql = "SELECT id_usuario, primeiro_nome, senha, cargo, status_conta FROM usuario WHERE email = ?";
-        
+
         if ($stmt = $conn->prepare($sql)) {
             $stmt->bind_param("s", $email);
             $stmt->execute();
@@ -39,11 +39,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($result->num_rows === 1) {
                 $user = $result->fetch_assoc();
-                
+
                 // 3. Verificação de Senha e Status
                 // Checa a senha usando o hash
                 if (password_verify($password, $user['senha'])) {
-                    
+
                     if ($user['status_conta'] !== 'Ativo') {
                         $error = "Sua conta está inativa ou bloqueada. Contate o suporte.";
                     } else {
@@ -61,7 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         }
                         exit();
                     }
-                    
                 } else {
                     // Senha incorreta
                     $error = "Email ou senha incorretos.";
@@ -83,6 +82,7 @@ if (isset($conn)) {
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,15 +92,16 @@ if (isset($conn)) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <div class="intro-section">
             <h1>Faça Login</h1>
             <p>Acesse sua conta para continuar a acelerar!</p>
         </div>
-        
+
         <div class="form-section">
-            
+
             <?php if (!empty($success)): ?>
                 <p style="color: #155724; padding: 10px; border: 1px solid #c3e6cb; background-color: #d4edda; border-radius: 4px; margin-bottom: 15px;"><?= $success ?></p>
             <?php endif; ?>
@@ -114,17 +115,18 @@ if (isset($conn)) {
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" placeholder="Seu email" value="<?= $email_input ?>" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="password">Senha</label>
                     <input type="password" id="password" name="password" placeholder="********" required>
                 </div>
-                
+
                 <button type="submit" class="register-btn">Entrar</button>
             </form>
-            
+
             <p class="login-link">Não tem uma conta? <a href="register.php">Registre-se</a></p>
         </div>
     </div>
 </body>
+
 </html>

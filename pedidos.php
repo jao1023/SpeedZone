@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <a href="javascript:history.back()" class="back-btn">
         &lt; Voltar
@@ -41,8 +43,8 @@
                     <span class="label mobile-only">Status:</span>
                     <span class="order-status delivered">Entregue</span>
                 </div>
-                </div>
-            
+            </div>
+
             <div class="order-item">
                 <div class="order-info">
                     <span class="label mobile-only">Pedido:</span>
@@ -60,7 +62,7 @@
                     <span class="label mobile-only">Status:</span>
                     <span class="order-status processing">Em Processamento</span>
                 </div>
-                </div>
+            </div>
 
             <div class="order-item">
                 <div class="order-info">
@@ -79,8 +81,9 @@
                     <span class="label mobile-only">Status:</span>
                     <span class="order-status cancelled">Cancelado</span>
                 </div>
-                </div>
+            </div>
         </section>
     </div>
 </body>
+
 </html>

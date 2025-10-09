@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $numero_int = (int)$numero_clean;
 
 
-    
+
 
     // Validação
     if (strlen($cep_clean) !== 8) {
@@ -112,6 +112,7 @@ $conn->close();
 <!-- HTML começa aqui -->
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Configurações da Conta - SpeedZone</title>
@@ -121,6 +122,7 @@ $conn->close();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <a href="index.php" class="back-btn">&lt; Voltar</a>
 
@@ -239,4 +241,5 @@ $conn->close();
         });
     </script>
 </body>
+
 </html>

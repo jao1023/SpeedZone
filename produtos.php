@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
- 
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
- 
+
 <body>
     <div class="admin-layout">
- 
+
         <aside class="sidebar">
             <div class="sidebar-header">
                 <i class="fas fa-tachometer-alt"></i>
@@ -24,7 +24,7 @@
                 <a href="admin.php" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
                 <a href="produtos.php" class="nav-item"><i class="fas fa-box-open"></i> Produtos</a>
                 <a href="vendas.php" class="nav-item"><i class="fas fa-chart-line"></i> Vendas</a>
-                <a href="usuarios.php" class="nav-item sidebar-link active" data-target="usuarios-section"><i class="fas fa-users"></i> Usuários</a> 
+                <a href="usuarios.php" class="nav-item sidebar-link active" data-target="usuarios-section"><i class="fas fa-users"></i> Usuários</a>
                 <a href="suporteAdmin.php" class="nav-item sidebar-link" data-target="suporte-section"><i class="fas fa-headset"></i> Suporte</a>
                 <a href="promocoes.php" class="nav-item"><i class="fas fa-tags"></i> Promoções</a>
             </nav>
@@ -34,14 +34,14 @@
         </aside>
         <main class="main-content">
             <h1 class="page-title">Gerenciamento de Produtos</h1>
- 
+
             <section id="product-list-view" class="management-section active">
                 <div class="action-bar">
                     <button class="add-btn" id="show-create-form"><i class="fas fa-plus"></i> Adicionar Novo
                         Produto</button>
                     <input type="text" placeholder="Buscar produto por nome ou Codigo..." class="search-input">
                 </div>
- 
+
                 <div class="data-table">
                     <div class="table-header product-grid-template">
                         <span>ID</span>
@@ -51,7 +51,7 @@
                         <span>Estoque</span>
                         <span>Ações</span>
                     </div>
- 
+
                     <div class="table-row product-grid-template" data-product-id="1">
                         <span class="cell-data">1</span>
                         <span class="cell-data">Fueltech FT450</span>
@@ -65,7 +65,7 @@
                                     class="fas fa-trash-alt"></i></button>
                         </span>
                     </div>
- 
+
                     <div class="table-row product-grid-template" data-product-id="2">
                         <span class="cell-data">2</span>
                         <span class="cell-data">Kit Adesivos Max Performance</span>
@@ -81,18 +81,18 @@
                     </div>
                 </div>
             </section>
- 
+
             <section id="product-form-view" class="management-section form-view">
                 <a href="#" class="back-link" id="hide-form-link"><i class="fas fa-arrow-left"></i> Voltar para
                     Lista</a>
- 
+
                 <h2 class="section-heading" id="form-title">Adicionar Novo Produto</h2>
- 
+
                 <div class="form-container">
                     <form action="#" method="POST" class="product-form">
- 
+
                         <input type="hidden" id="product-id" name="id" value="">
- 
+
                         <fieldset>
                             <legend>Informações do Produto</legend>
                             <div class="form-grid">
@@ -105,14 +105,14 @@
                                     <input type="text" id="sku" name="sku" required>
                                 </div>
                             </div>
- 
+
                             <div class="form-group">
                                 <label for="descricao">Descrição Completa</label>
                                 <textarea id="descricao" name="descricao" rows="4"
                                     placeholder="Detalhes técnicos, compatibilidade, etc."></textarea>
                             </div>
                         </fieldset>
- 
+
                         <fieldset>
                             <legend>Preço e Inventário</legend>
                             <div class="form-grid">
@@ -232,10 +232,10 @@
                                     <option value="placa_expositora">Placa Expositora</option>
                                     <option value="capa_automotiva">Capa Automotiva</option>
                                 </select>
- 
+
                             </div>
                         </fieldset>
- 
+
                         <fieldset>
                             <legend>Mídia</legend>
                             <div class="form-group">
@@ -243,16 +243,16 @@
                                 <input type="file" id="imagem" name="imagem" accept="image/*">
                             </div>
                         </fieldset>
- 
+
                         <button type="submit" class="submit-btn" id="submit-product-btn">Salvar Produto</button>
                     </form>
                 </div>
             </section>
- 
+
         </main>
     </div>
- 
+
     <script src="script.js"></script>
 </body>
- 
+
 </html>
