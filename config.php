@@ -15,6 +15,7 @@ $error = '';
 $success = '';
 $user_data = [];
 
+
 // --- PROCESSAMENTO DE ATUALIZAÇÃO DE ENDEREÇO ---
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Coletar e limpar dados
