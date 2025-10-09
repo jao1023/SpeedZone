@@ -1,0 +1,320 @@
+/* Geral */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+}
+
+/* Barra de Navegação */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo a {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a731d;
+    text-decoration: none;
+}
+
+.nav-links a {
+    margin-right: 25px;
+    color: #555;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #1a731d;
+}
+
+.user-menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.user-menu-btn {
+    background-color: #fff;
+    color: #1a731d;
+    border: 0px solid #1a731d;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.user-menu-btn:hover {
+    background-color: #e6f9e6;
+}
+
+.user-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 12px;
+    z-index: 1;
+}
+
+.user-dropdown-content a {
+    color: #555;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: 400;
+    transition: background-color 0.2s;
+    border-radius: 5px;
+}
+
+.user-dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.user-menu-container:hover .user-dropdown-content {
+    display: block;
+}
+
+/* Conteúdo Principal */
+.main-content {
+    padding: 30px 50px;
+}
+
+/* Banner */
+.banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1a731d;
+    color: #fff;
+    border-radius: 15px;
+    padding: 50px;
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+
+.banner-text-box {
+    max-width: 50%;
+}
+
+.banner-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.banner-image {
+    max-width: 40%;
+    height: auto;
+    display: block;
+}
+
+/* Seção de Catálogo */
+.catalog-section {
+    max-width: 100%;
+}
+
+.section-title {
+    color: #1a731d;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.search-bar-container {
+    display: flex;
+    background-color: #e6e6e6;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 30px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-btn {
+    background-color: #1a731d;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+    background-color: #135c16;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    text-align: center;
+    padding: 20px;
+}
+
+.product-img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.product-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a731d;
+    margin-bottom: 5px;
+}
+
+.product-description {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.buy-btn {
+    display: inline-block;
+    padding: 10px 25px;
+    background-color: #1a731d;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.buy-btn:hover {
+    background-color: #135c16;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-links {
+        margin-top: 15px;
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+    }
+    
+    .user-menu-container {
+        align-self: flex-end;
+    }
+
+    .banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px;
+    }
+
+    .banner-text-box {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .banner-image {
+        max-width: 60%;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+    
+    .search-bar-container {
+        flex-direction: column;
+    }
+
+    .search-input {
+        margin-bottom: 10px;
+    }
+}
+/* ... código CSS existente ... */
+
+/* Carrossel */
+.carousel-section {
+    padding: 20px 50px;
+    background-color: #f0f2f5;
+}
+
+.carousel-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-images {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-img {
+    width: 100%;
+    height: auto;
+    display: none;
+}
+
+.carousel-img.active {
+    display: block;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(26, 115, 29, 0.7);
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 2rem;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-btn:hover {
+    background-color: rgba(19, 92, 22, 0.9);
+}
+
+.prev-btn {
+    left: 20px;
+}
+
+.next-btn {
+    right: 20px;
+}
+
+/* ... restante do código CSS ... */

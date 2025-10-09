@@ -1,0 +1,163 @@
+/* Geral */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Seção de Introdução (Imagem e Texto) */
+.intro-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background-color: #e6f9e6; /* Verde claro */
+    text-align: center;
+}
+
+.illustration {
+    width: 80%;
+    max-width: 450px;
+    margin-bottom: 20px;
+}
+
+.intro-section h1 {
+    color: #1a731d; /* Verde escuro */
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.intro-section p {
+    color: #444;
+    font-size: 1rem;
+}
+
+/* Seção do Formulário */
+.form-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 40px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #1a731d; /* Verde ao focar */
+    box-shadow: 0 0 5px rgba(26, 115, 29, 0.3);
+}
+
+/* Estilo para a nova checkbox */
+.terms-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.terms-group input[type="checkbox"] {
+    width: auto; /* Para não ocupar a largura total */
+    margin-right: 10px;
+}
+
+.terms-group label {
+    margin-bottom: 0;
+    font-weight: 400;
+    color: #555;
+    display: inline;
+}
+
+.terms-group a {
+    color: #1a731d;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.terms-group a:hover {
+    text-decoration: underline;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #1a731d; /* Verde principal */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.register-btn:hover {
+    background-color: #135c16; /* Verde mais escuro no hover */
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #777;
+}
+
+.login-link a {
+    color: #1a731d;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 90%;
+        max-width: 500px;
+    }
+
+    .intro-section {
+        display: none; /* Esconde a seção de imagem em telas pequenas para economizar espaço */
+    }
+
+    .form-section {
+        padding: 40px 25px;
+    }
+}
