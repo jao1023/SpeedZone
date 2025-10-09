@@ -157,11 +157,6 @@ categoria ENUM(
   CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. ATUALIZAÇÃO PARA GERAR O cod_pedido
-
--- O código abaixo usa o id_pedido gerado automaticamente e o formatador LPAD 
--- (Left Pad) para preencher com zeros à esquerda, garantindo o formato '000X'.
-
 SELECT * FROM pedidos;
 SELECT * FROM usuario;
 
