@@ -16,6 +16,7 @@ $cpf = $_POST['cpf'] ?? ''; // Valor bruto digitado
 $cpf_formatted_for_form = htmlspecialchars($cpf); // Valor que vai para o input em caso de erro
 $cpf_final_to_db = null; // Variável que será inserida no DB
 
+
 /**
  * Função para validar o CPF algorítmicamente.
  * @param string $cpf O CPF como string contendo apenas dígitos.
@@ -46,6 +47,7 @@ function validateCPF(string $cpf): bool {
     return true;
 }
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Coletar e Limpar Dados do Formulário
@@ -56,6 +58,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';
     $terms = $_POST['terms'] ?? '';
+    
+    // Repopular campo CPF antes da validação
+    $cpf_formatted_for_form = htmlspecialchars($cpf); 
 
     // 1. Validação Básica
     if (empty($firstName) || empty($lastName) || empty($email) || empty($cpf) || empty($password) || empty($confirmPassword)) {
@@ -70,35 +75,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "A senha deve ter pelo menos 6 caracteres.";
     } else {
         
-        // 1. Limpa o CPF para obter apenas dígitos e valida o tamanho
+        // 1. Limpa o CPF para obter apenas dígitos
         $cpf_clean = preg_replace('/[^0-9]/', '', $cpf);
         
         // Validação adicional de tamanho e formato do CPF limpo
         if (strlen($cpf_clean) != 11) {
             $error = "O CPF deve conter 11 dígitos.";
-            // Mantém o valor digitado (mesmo que incompleto) para repopular o campo
-            $cpf_formatted_for_form = htmlspecialchars($cpf); 
         } 
-        
         // NOVO: Validação algorítmica do CPF
         elseif (!validateCPF($cpf_clean)) {
-             $error = "O CPF informado é inválido.";
-             $cpf_formatted_for_form = htmlspecialchars($cpf); // Mantém para repopular
+            $error = "O CPF informado é inválido.";
         }
         
-        // Se passou na validação de formato e algorítmica
+        // Se passou em TODAS as validações (básica, tamanho, algorítmica)
         if (empty($error)) {
-            // 2. Formata o CPF para o padrão 111.111.111-11
+             // 2. Formata o CPF para o padrão 111.111.111-11
             $cpf_final_to_db = preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "$1.$2.$3-$4", $cpf_clean);
             
-            // Usa o valor formatado tanto para o banco quanto para repopular o formulário
+            // Usa o valor formatado para repopular o formulário em caso de sucesso ou erro de DB
             $cpf_formatted_for_form = $cpf_final_to_db; 
 
             // 3. Checar se Email ou CPF já existem no DB
-            // ESTA É A PARTE QUE JÁ CHECA A EXISTÊNCIA NO BANCO
             $check_sql = "SELECT id_usuario FROM usuario WHERE email = ? OR cpf = ?";
             if ($stmt = $conn->prepare($check_sql)) {
-                // AGORA CHECA O CPF JÁ FORMATADO
+                // Checa o CPF JÁ FORMATADO
                 $stmt->bind_param("ss", $email, $cpf_final_to_db); 
                 $stmt->execute();
                 $stmt->store_result();
@@ -140,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         }
                         $stmt_insert->close();
                     } else {
-                         $error = "Erro interno ao preparar a inserção. Tente novamente.";
+                        $error = "Erro interno ao preparar a inserção. Tente novamente.";
                     }
                 }
                 $stmt->close();

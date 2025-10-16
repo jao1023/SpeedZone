@@ -182,7 +182,11 @@ if (!$result) {
                     <h2 class="section-heading" id="user-form-title">Adicionar Novo Usuário</h2>
 
                     <div class="form-container">
+<<<<<<< HEAD
                         <form action="edit_users.php" method="POST" class="user-form">
+=======
+                        <form action="#" method="POST" class="user-form">
+>>>>>>> 4422731546061217ef2347467b780afa81775e72
                             <input type="hidden" id="user-id" name="id" value="">
 
                             <fieldset>
