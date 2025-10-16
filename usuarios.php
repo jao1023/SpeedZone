@@ -182,11 +182,9 @@ if (!$result) {
                     <h2 class="section-heading" id="user-form-title">Adicionar Novo Usuário</h2>
 
                     <div class="form-container">
-<<<<<<< HEAD
                         <form action="edit_users.php" method="POST" class="user-form">
-=======
                         <form action="#" method="POST" class="user-form">
->>>>>>> 4422731546061217ef2347467b780afa81775e72
+
                             <input type="hidden" id="user-id" name="id" value="">
 
                             <fieldset>
@@ -196,7 +194,6 @@ if (!$result) {
                                     <div class="form-group"><label for="email">Email *</label><input type="email" id="user-email" name="email" required></div>
                                 </div>
                                 <div class="form-grid">
-                                    <div class="form-group"><label for="telefone">Telefone</label><input type="text" id="user-telefone" name="telefone" placeholder="(XX) XXXX-XXXX"></div>
                                     <div class="form-group"><label for="registro">Data de Registro</label><input type="text" id="user-registro" name="registro" disabled value="<?= date('d/m/Y'); ?>"></div>
                                 </div>
                             </fieldset>
@@ -216,7 +213,8 @@ if (!$result) {
                                         <label for="status">Status da Conta</label>
                                         <select id="user-status" name="status">
                                             <option value="Ativo">Ativo</option>
-                                            <option value="Bloqueado/Desativado">Bloqueado/Inativo</option>
+                                            <option value="Bloqueado">Bloqueado</option>
+                                            <option value="Desativado">Desativado</option>
                                         </select>
                                     </div>
                                 </div>

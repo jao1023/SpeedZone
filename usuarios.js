@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 // Arquivo: usuarios.js
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -131,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-=======
 document.addEventListener('DOMContentLoaded', () => {
     
     // Elementos da Visualização
@@ -195,30 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleUserView(false);
     });
 
-    // Ação de Editar
-    editBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const userId = e.currentTarget.getAttribute('data-id');
-            loadUserForEdit(userId);
-        });
-    });
 
-    // Ação de Deletar
-    document.querySelectorAll('.delete-user-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const userId = e.currentTarget.getAttribute('data-id');
-            if (confirm(`Tem certeza que deseja DELETAR o usuário #${userId}? Essa ação é irreversível!`)) {
-                alert(`Usuário #${userId} deletado (Simulação).`);
-            }
-        });
-    });
 
     // Ação de Salvar/Criar
-    userForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const action = document.getElementById('user-id').value ? 'editado' : 'criado';
-        alert(`Usuário ${action} com sucesso! (Simulação)`);
-        toggleUserView(false);
-    });
 });
->>>>>>> 4422731546061217ef2347467b780afa81775e72
