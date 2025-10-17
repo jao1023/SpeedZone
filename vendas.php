@@ -35,7 +35,11 @@
                 <a href="vendas.php" class="nav-item"><i class="fas fa-chart-line"></i> Vendas</a>
                 <a href="usuarios.php" class="nav-item sidebar-link active" data-target="usuarios-section"><i class="fas fa-users"></i> Usuários</a> 
                 <a href="suporteAdmin.php" class="nav-item sidebar-link" data-target="suporte-section"><i class="fas fa-headset"></i> Suporte</a>
+<<<<<<< HEAD
                 <a href="cupons.php" class="nav-item"><i class="fas fa-tags"></i> Cupons</a>
+=======
+                <a href="promocoes.php" class="nav-item"><i class="fas fa-tags"></i> Promoções</a>
+>>>>>>> e7869446688dd7b7c3a1fcc1ad634e023d938e58
             </nav>
             <div class="logout-section">
                 <a href="index.php"><i class="fas fa-sign-out-alt"></i> Sair</a>

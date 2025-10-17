@@ -729,6 +729,7 @@ legend {
     padding-right: 5px;
 }
 
+<<<<<<< HEAD
 /*
  * ARQUIVO: admin.css
  * Este arquivo unifica os estilos do Painel Admin (Dashboard, Produtos, Cupons, etc.).
@@ -1081,4 +1082,6 @@ body {
     .product-grid-template span:nth-child(4), .product-grid-template span:nth-child(5) { display: flex; }
     .actions { justify-content: center; margin-top: 10px; }
 }
+=======
+>>>>>>> e7869446688dd7b7c3a1fcc1ad634e023d938e58
  
