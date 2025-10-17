@@ -1,0 +1,124 @@
+/* Geral */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Botão de Voltar */
+.back-btn {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    font-size: 1rem;
+    color: hsl(122, 63%, 28%);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px;
+    transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+    color: #135c16;
+}
+
+/* Container Principal */
+.container {
+    width: 100%;
+    max-width: 600px; /* Um formulário de suporte geralmente é mais estreito */
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    box-sizing: border-box;
+    margin-top: 50px;
+}
+
+.page-title {
+    color: #1a731d;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.support-intro {
+    color: #777;
+    margin-bottom: 30px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* Formulário e Campos */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif; /* Garante que o texto dentro seja Poppins */
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1a731d;
+    box-shadow: 0 0 5px rgba(26, 115, 29, 0.3);
+}
+
+.form-group input:disabled {
+    background-color: #f8f8f8;
+    color: #777;
+    cursor: not-allowed;
+}
+
+.form-group textarea {
+    resize: vertical; /* Permite redimensionamento vertical */
+}
+
+/* Botão de Envio */
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #1a731d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #135c16;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 25px;
+    }
+}

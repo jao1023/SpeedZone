@@ -1,0 +1,93 @@
+/* Estilos para a página de termos de uso */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.terms-container {
+    width: 100%;
+    max-width: 900px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+.terms-title {
+    color: #1a731d;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.terms-intro {
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.terms-section {
+    margin-bottom: 30px;
+}
+
+.section-heading {
+    color: #1a731d;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.section-text {
+    color: #444;
+    line-height: 1.6;
+}
+
+.terms-end {
+    color: #777;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .terms-container {
+        padding: 25px;
+    }
+    
+    .terms-title {
+        font-size: 2rem;
+    }
+    
+    .section-heading {
+        font-size: 1.3rem;
+    }
+}
+/* Botão de Voltar */
+.back-btn {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    font-size: 1rem;
+    color: #1a731d;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px;
+    transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+    color: #135c16;
+}
+
