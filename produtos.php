@@ -1,3 +1,66 @@
+<?php
+require_once 'connection.php';
+
+// Array para armazenar os produtos
+$produtos = array();
+$erro = '';
+$sucesso = '';
+$termo_busca = '';
+
+// Capturar mensagens da URL (vindas do novo_produto.php)
+if (isset($_GET['erro'])) {
+    $erro = $_GET['erro'];
+}
+if (isset($_GET['sucesso'])) {
+    $sucesso = $_GET['sucesso'];
+}
+
+// Capturar termo de busca
+if (isset($_GET['busca'])) {
+    $termo_busca = trim($_GET['busca']);
+}
+
+try {
+    // Verificar se a conexão foi estabelecida
+    if ($conn->connect_error) {
+        throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
+    }
+
+    // Consulta para buscar produtos (com ou sem filtro de busca)
+    if (!empty($termo_busca)) {
+        $sql = "SELECT * FROM produtos WHERE nome_produto LIKE ? OR cod_produto LIKE ? ORDER BY id_produto ASC";
+        $stmt = $conn->prepare($sql);
+        $busca_param = "%" . $termo_busca . "%";
+        $stmt->bind_param("ss", $busca_param, $busca_param);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $sql = "SELECT * FROM produtos ORDER BY id_produto ASC";
+        $result = $conn->query($sql);
+    }
+
+    // Verificar se a consulta foi executada com sucesso
+    if ($result === false) {
+        throw new Exception("Erro na consulta SQL: " . $conn->error);
+    }
+
+    // Processar resultados
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $produtos[] = $row;
+        }
+    }
+
+} catch (Exception $e) {
+    $erro = $e->getMessage();
+    error_log("Erro em produtos.php: " . $erro);
+} finally {
+    // Fechar conexão
+    if (isset($conn)) {
+        $conn->close();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -36,11 +99,34 @@
         <main class="main-content">
             <h1 class="page-title">Gerenciamento de Produtos</h1>
 
+            <?php if (!empty($erro)): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?php echo htmlspecialchars($erro); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($sucesso)): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <?php echo htmlspecialchars($sucesso); ?>
+                </div>
+            <?php endif; ?>
+
             <section id="product-list-view" class="management-section active">
                 <div class="action-bar">
                     <button class="add-btn" id="show-create-form"><i class="fas fa-plus"></i> Adicionar Novo
                         Produto</button>
-                    <input type="text" placeholder="Buscar produto por nome ou Codigo..." class="search-input">
+                    <form method="GET" class="search-form">
+                        <input type="text" name="busca" placeholder="Buscar produto por nome ou código..." 
+                               class="search-input" value="<?php echo htmlspecialchars($termo_busca); ?>">
+                        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                        <?php if (!empty($termo_busca)): ?>
+                            <a href="produtos.php" class="clear-search-btn" title="Limpar busca">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        <?php endif; ?>
+                    </form>
                 </div>
 
                 <div class="data-table">
@@ -53,33 +139,38 @@
                         <span>Ações</span>
                     </div>
 
-                    <div class="table-row product-grid-template" data-product-id="1">
-                        <span class="cell-data">1</span>
-                        <span class="cell-data">Fueltech FT450</span>
-                        <span class="cell-data">0001</span>
-                        <span class="cell-data">R$ 2.500,00</span>
-                        <span class="cell-data green">15</span>
-                        <span class="cell-data actions">
-                            <button class="action-btn edit edit-btn" title="Editar Produto" data-id="1"><i
-                                    class="fas fa-edit"></i></button>
-                            <button class="action-btn delete delete-btn" title="Excluir Produto" data-id="1"><i
-                                    class="fas fa-trash-alt"></i></button>
-                        </span>
-                    </div>
-
-                    <div class="table-row product-grid-template" data-product-id="2">
-                        <span class="cell-data">2</span>
-                        <span class="cell-data">Kit Adesivos Max Performance</span>
-                        <span class="cell-data">0002</span>
-                        <span class="cell-data">R$ 59,90</span>
-                        <span class="cell-data orange">120</span>
-                        <span class="cell-data actions">
-                            <button class="action-btn edit edit-btn" title="Editar Produto" data-id="2"><i
-                                    class="fas fa-edit"></i></button>
-                            <button class="action-btn delete delete-btn" title="Excluir Produto" data-id="2"><i
-                                    class="fas fa-trash-alt"></i></button>
-                        </span>
-                    </div>
+                    <?php if (!empty($produtos)): ?>
+                        <?php foreach ($produtos as $produto): ?>
+                            <div class="table-row product-grid-template" data-product-id="<?php echo $produto['id_produto']; ?>">
+                                <span class="cell-data"><?php echo $produto['id_produto']; ?></span>
+                                <span class="cell-data"><?php echo htmlspecialchars($produto['nome_produto']); ?></span>
+                                <span class="cell-data"><?php echo htmlspecialchars($produto['cod_produto']); ?></span>
+                                <span class="cell-data">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></span>
+                                <span class="cell-data <?php echo $produto['qtd_estoque'] > 50 ? 'green' : ($produto['qtd_estoque'] > 10 ? 'orange' : 'red'); ?>">
+                                    <?php echo $produto['qtd_estoque']; ?>
+                                </span>
+                                <span class="cell-data actions">
+                                    <button class="action-btn edit edit-btn" title="Editar Produto" data-id="<?php echo $produto['id_produto']; ?>">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn delete delete-btn" title="Excluir Produto" data-id="<?php echo $produto['id_produto']; ?>">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="table-row product-grid-template">
+                            <span class="cell-data" colspan="6" style="text-align: center; padding: 20px;">
+                                <?php if (!empty($termo_busca)): ?>
+                                    Nenhum produto encontrado para "<?php echo htmlspecialchars($termo_busca); ?>".
+                                    <br><a href="produtos.php" style="color: #1a731d; text-decoration: underline;">Ver todos os produtos</a>
+                                <?php else: ?>
+                                    Nenhum produto encontrado no banco de dados.
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </section>
 
@@ -90,7 +181,7 @@
                 <h2 class="section-heading" id="form-title">Adicionar Novo Produto</h2>
 
                 <div class="form-container">
-                    <form action="#" method="POST" class="product-form">
+                    <form action="novo_produto.php" method="POST" class="product-form">
 
                         <input type="hidden" id="product-id" name="id" value="">
 
@@ -237,13 +328,6 @@
                             </div>
                         </fieldset>
 
-                        <fieldset>
-                            <legend>Mídia</legend>
-                            <div class="form-group">
-                                <label for="imagem">Imagem Principal</label>
-                                <input type="file" id="imagem" name="imagem" accept="image/*">
-                            </div>
-                        </fieldset>
 
                         <button type="submit" class="submit-btn" id="submit-product-btn">Salvar Produto</button>
                     </form>
