@@ -6,6 +6,58 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
     header("Location: login.php");
     exit;
 }
+
+require_once 'connection.php';
+
+// Array para armazenar os produtos
+$produtos = array();
+$termo_busca = '';
+
+// Capturar termo de busca
+if (isset($_GET['busca'])) {
+    $termo_busca = trim($_GET['busca']);
+}
+
+try {
+    // Verificar se a conexão foi estabelecida
+    if ($conn->connect_error) {
+        throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
+    }
+
+    // Consulta para buscar produtos (com ou sem filtro de busca)
+    if (!empty($termo_busca)) {
+        $sql = "SELECT * FROM produtos WHERE nome_produto LIKE ? OR cod_produto LIKE ? ORDER BY id_produto ASC LIMIT 12";
+        $stmt = $conn->prepare($sql);
+        $busca_param = "%" . $termo_busca . "%";
+        $stmt->bind_param("ss", $busca_param, $busca_param);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $sql = "SELECT * FROM produtos ORDER BY id_produto ASC LIMIT 12";
+        $result = $conn->query($sql);
+    }
+
+    // Verificar se a consulta foi executada com sucesso
+    if ($result === false) {
+        throw new Exception("Erro na consulta SQL: " . $conn->error);
+    }
+
+    // Processar resultados
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $produtos[] = $row;
+        }
+    }
+
+} catch (Exception $e) {
+    error_log("Erro em index.php: " . $e->getMessage());
+    // Em caso de erro, manter array vazio para não quebrar a página
+} finally {
+    // Fechar conexão
+    if (isset($conn)) {
+        $conn->close();
+    }
+}
 ?>
 
 
@@ -68,47 +120,46 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
         <section class="catalog-section">
             <h2 class="section-title">Catálogo</h2>
             <div class="search-bar-container">
-                <input type="text" placeholder="Pesquisa" class="search-input">
-                <button class="search-btn">Procurar</button>
+                <form method="GET" class="search-form">
+                    <input type="text" name="busca" placeholder="Pesquisar produtos..." class="search-input" value="<?php echo htmlspecialchars($termo_busca); ?>">
+                    <button type="submit" class="search-btn">Procurar</button>
+                    <?php if (!empty($termo_busca)): ?>
+                        <a href="index.php" class="clear-search-btn" title="Limpar busca">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    <?php endif; ?>
+                </form>
             </div>
 
             <div class="product-grid">
-                <div class="product-card">
-                    <img src="https://i.imgur.com/vHqQ9zG.png" alt="Produto 1" class="product-img">
-                    <h3 class="product-name">Fueltech FT450</h3>
-                    <p class="product-description">Módulo de controle para sistema de injeção eletrônica em veículos automotores.</p>
-                    <a href="produto.php" class="buy-btn">Comprar</a>
-                </div>
-                <div class="product-card">
-                    <img src="https://i.imgur.com/k9b8ZqY.png" alt="Produto 2" class="product-img">
-                    <h3 class="product-name">Kit de Adesivos 'Velocidade Máxima'</h3>
-                    <p class="product-description">Personalize seu carro com este kit de adesivos exclusivos.</p>
-                    <a href="produto.php" class="buy-btn">Comprar</a>
-                </div>
-                <div class="product-card">
-                    <img src="https://i.imgur.com/vHqQ9zG.png" alt="Produto 3" class="product-img">
-                    <h3 class="product-name">Fueltech FT450</h3>
-                    <p class="product-description">Módulo de controle para sistema de injeção eletrônica em veículos automotores.</p>
-                    <a href="produto.php" class="buy-btn">Comprar</a>
-                </div>
-                <div class="product-card">
-                    <img src="https://i.imgur.com/k9b8ZqY.png" alt="Produto 4" class="product-img">
-                    <h3 class="product-name">Kit de Adesivos 'Velocidade Máxima'</h3>
-                    <p class="product-description">Personalize seu carro com este kit de adesivos exclusivos.</p>
-                    <a href="produto.php" class="buy-btn">Comprar</a>
-                </div>
-                <div class="product-card">
-                    <img src="https://i.imgur.com/vHqQ9zG.png" alt="Produto 5" class="product-img">
-                    <h3 class="product-name">Fueltech FT450</h3>
-                    <p class="product-description">Módulo de controle para sistema de injeção eletrônica em veículos automotores.</p>
-                    <a href="produto.php" class="buy-btn">Comprar</a>
-                </div>
-                <div class="product-card">
-                    <img src="https://i.imgur.com/k9b8ZqY.png" alt="Produto 6" class="product-img">
-                    <h3 class="product-name">Kit de Adesivos 'Velocidade Máxima'</h3>
-                    <p class="product-description">Personalize seu carro com este kit de adesivos exclusivos.</p>
-                    <a href="produto.php" class="buy-btn">Comprar</a>
-                </div>
+                <?php if (!empty($produtos)): ?>
+                    <?php foreach ($produtos as $produto): ?>
+                        <div class="product-card">
+                            <img src="https://i.imgur.com/vHqQ9zG.png" alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>" class="product-img">
+                            <h3 class="product-name"><?php echo htmlspecialchars($produto['nome_produto']); ?></h3>
+                            <p class="product-description"><?php echo htmlspecialchars($produto['descricao_produto']); ?></p>
+                            <div class="product-price">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></div>
+                            <?php if ($produto['qtd_estoque'] <= 0): ?>
+                                <div class="product-stock">
+                                    <span class="stock-unavailable">Fora de estoque</span>
+                                </div>
+                            <?php endif; ?>
+                            <a href="produto.php?id=<?php echo $produto['id_produto']; ?>" class="buy-btn">
+                                <?php echo $produto['qtd_estoque'] > 0 ? 'Comprar' : 'Indisponível'; ?>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="no-products">
+                        <?php if (!empty($termo_busca)): ?>
+                            <h3>Nenhum produto encontrado para "<?php echo htmlspecialchars($termo_busca); ?>"</h3>
+                            <p>Tente uma busca diferente ou <a href="index.php">veja todos os produtos</a></p>
+                        <?php else: ?>
+                            <h3>Nenhum produto disponível no momento</h3>
+                            <p>Volte em breve para ver nossos produtos!</p>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </section>
     </main>

@@ -1,3 +1,56 @@
+<?php
+session_start();
+require_once 'connection.php';
+
+// Para teste, usar ID de usuário 1 (em um sistema real, isso viria da sessão)
+$id_usuario = 1; // $_SESSION['user_id'] ?? null;
+
+// Buscar pedidos do usuário
+$pedidos = array();
+if ($id_usuario) {
+    try {
+        // Buscar pedidos finalizados do usuário
+        $sql = "SELECT DISTINCT pf.codigo_pedido as cod_pedido_base,
+                       p.status_pedido, pf.total_final, pf.data_pedido 
+                FROM pedidos_finalizados pf
+                LEFT JOIN pedidos p ON SUBSTRING(p.cod_pedido, 1, LOCATE('-', p.cod_pedido, LOCATE('-', p.cod_pedido) + 1) - 1) = pf.codigo_pedido
+                WHERE pf.id_usuario = ? 
+                ORDER BY pf.data_pedido DESC";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $pedidos[] = $row;
+        }
+        $stmt->close();
+        
+    } catch (Exception $e) {
+        error_log("Erro ao buscar pedidos: " . $e->getMessage());
+    }
+}
+
+// Função para formatar data
+function formatarData($data) {
+    return date('d/m/Y', strtotime($data));
+}
+
+// Função para obter classe CSS do status
+function getStatusClass($status) {
+    switch ($status) {
+        case 'Entregue':
+            return 'delivered';
+        case 'Em Processamento':
+            return 'processing';
+        case 'Cancelado':
+            return 'cancelled';
+        default:
+            return 'processing';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -19,69 +72,43 @@
         <h1 class="page-title">Meus Pedidos</h1>
 
         <section class="orders-section">
-            <div class="order-header desktop-only">
-                <span class="header-col">Pedido</span>
-                <span class="header-col">Data</span>
-                <span class="header-col">Total</span>
-                <span class="header-col">Status</span>
-            </div>
+            <?php if (!empty($pedidos)): ?>
+                <div class="order-header desktop-only">
+                    <span class="header-col">Pedido</span>
+                    <span class="header-col">Data</span>
+                    <span class="header-col">Total</span>
+                    <span class="header-col">Status</span>
+                </div>
 
-            <div class="order-item">
-                <div class="order-info">
-                    <span class="label mobile-only">Pedido:</span>
-                    <span class="order-number">#SPDZ2023-1001</span>
+                <?php foreach ($pedidos as $pedido): ?>
+                    <div class="order-item">
+                        <div class="order-info">
+                            <span class="label mobile-only">Pedido:</span>
+                            <span class="order-number">#<?php echo htmlspecialchars($pedido['cod_pedido_base']); ?></span>
+                        </div>
+                        <div class="order-info">
+                            <span class="label mobile-only">Data:</span>
+                            <span class="order-date"><?php echo formatarData($pedido['data_pedido']); ?></span>
+                        </div>
+                        <div class="order-info">
+                            <span class="label mobile-only">Total:</span>
+                            <span class="order-total">R$ <?php echo number_format($pedido['total_final'], 2, ',', '.'); ?></span>
+                        </div>
+                        <div class="order-info">
+                            <span class="label mobile-only">Status:</span>
+                            <span class="order-status <?php echo getStatusClass($pedido['status_pedido']); ?>">
+                                <?php echo htmlspecialchars($pedido['status_pedido']); ?>
+                            </span>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="no-orders">
+                    <h3>Nenhum pedido encontrado</h3>
+                    <p>Você ainda não fez nenhum pedido.</p>
+                    <a href="index.php" class="continue-shopping-btn">Continuar Comprando</a>
                 </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Data:</span>
-                    <span class="order-date">25/09/2025</span>
-                </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Total:</span>
-                    <span class="order-total">R$ 159,80</span>
-                </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Status:</span>
-                    <span class="order-status delivered">Entregue</span>
-                </div>
-            </div>
-
-            <div class="order-item">
-                <div class="order-info">
-                    <span class="label mobile-only">Pedido:</span>
-                    <span class="order-number">#SPDZ2023-1002</span>
-                </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Data:</span>
-                    <span class="order-date">28/09/2025</span>
-                </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Total:</span>
-                    <span class="order-total">R$ 299,00</span>
-                </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Status:</span>
-                    <span class="order-status processing">Em Processamento</span>
-                </div>
-            </div>
-
-            <div class="order-item">
-                <div class="order-info">
-                    <span class="label mobile-only">Pedido:</span>
-                    <span class="order-number">#SPDZ2023-1003</span>
-                </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Data:</span>
-                    <span class="order-date">29/09/2025</span>
-                </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Total:</span>
-                    <span class="order-total">R$ 50,50</span>
-                </div>
-                <div class="order-info">
-                    <span class="label mobile-only">Status:</span>
-                    <span class="order-status cancelled">Cancelado</span>
-                </div>
-            </div>
+            <?php endif; ?>
         </section>
     </div>
 </body>

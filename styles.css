@@ -177,6 +177,9 @@ body {
     overflow: hidden;
     text-align: center;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 350px;
 }
 
 .product-img {
@@ -190,12 +193,22 @@ body {
     font-weight: 600;
     color: #1a731d;
     margin-bottom: 5px;
+    min-height: 2.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .product-description {
     font-size: 0.9rem;
     color: #777;
     margin-bottom: 15px;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .buy-btn {
@@ -207,10 +220,97 @@ body {
     border-radius: 5px;
     font-weight: 600;
     transition: background-color 0.3s ease;
+    margin-top: auto;
+    align-self: center;
+    width: fit-content;
 }
 
 .buy-btn:hover {
     background-color: #135c16;
+}
+
+.buy-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Novos estilos para produtos dinâmicos */
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a731d;
+    margin: 10px 0 15px 0;
+}
+
+.product-stock {
+    margin: 8px 0;
+    font-size: 0.9rem;
+}
+
+.stock-available {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.stock-unavailable {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.no-products {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.no-products h3 {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.no-products p {
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.no-products a {
+    color: #1a731d;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.no-products a:hover {
+    text-decoration: underline;
+}
+
+/* Formulário de busca */
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.clear-search-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clear-search-btn:hover {
+    background-color: #c82333;
+    color: white;
 }
 
 /* Responsividade */

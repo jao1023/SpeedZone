@@ -166,7 +166,7 @@ try {
                                     Nenhum produto encontrado para "<?php echo htmlspecialchars($termo_busca); ?>".
                                     <br><a href="produtos.php" style="color: #1a731d; text-decoration: underline;">Ver todos os produtos</a>
                                 <?php else: ?>
-                                    Nenhum produto encontrado no banco de dados.
+                                    Nenhum produto encontrado
                                 <?php endif; ?>
                             </span>
                         </div>

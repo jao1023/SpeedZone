@@ -5,80 +5,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.querySelector('.modal .close-btn');
     const viewDetailsBtns = document.querySelectorAll('.view-details-btn');
     const itemsList = document.getElementById('items-list');
-
-    // Simulação de Dados de Pedidos (Substituiria o Banco de Dados)
-    const ordersData = {
-        '1001': {
-            id: '#SZ2025-1001', date: '30/09/2025', client: 'João Silva', email: 'joao.silva@email.com', 
-            address: 'Rua das Peças, 123, Curitiba - PR', status: 'Em Processamento',
-            subtotal: 'R$ 2.500,00', shipping: 'R$ 59,90', total: 'R$ 2.559,90',
-            items: [
-                { name: 'Fueltech FT450', cod: 'FT-450', qty: 1, subtotal: 'R$ 2.500,00' },
-                { name: 'Kit Adesivos', cod: 'ADES-M', qty: 1, subtotal: 'R$ 59,90' }
-            ]
-        },
-        '1002': {
-            id: '#SZ2025-1002', date: '29/09/2025', client: 'Maria Souza', email: 'maria.souza@email.com', 
-            address: 'Av. Velocidade, 400, São Paulo - SP', status: 'Entregue',
-            subtotal: 'R$ 139,80', shipping: 'R$ 20,00', total: 'R$ 159,80',
-            items: [
-                { name: 'Óleo Motor Sintético', cod: 'OLEO-SYNT', qty: 2, subtotal: 'R$ 139,80' }
-            ]
-        },
-        '1003': {
-            id: '#SZ2025-1003', date: '28/09/2025', client: 'Pedro Santos', email: 'pedro.santos@email.com', 
-            address: 'Rua da Turbina, 50, Rio de Janeiro - RJ', status: 'Cancelado',
-            subtotal: 'R$ 4.999,00', shipping: 'R$ 0,00', total: 'R$ 4.999,00',
-            items: [
-                { name: 'Turbina Garrett GT28RS', cod: 'GT-28RS', qty: 1, subtotal: 'R$ 4.999,00' }
-            ]
-        }
-    };
+    
+    // Elementos da busca
+    const searchInput = document.querySelector('.search-input');
+    const clearSearchBtn = document.querySelector('.clear-search-btn');
+    const tableRows = document.querySelectorAll('.table-row');
 
     // Função para preencher e mostrar o modal
-    function showOrderDetails(orderId) {
-        const order = ordersData[orderId];
-        if (!order) return alert('Pedido não encontrado.');
-
-        // 1. Preenche Títulos e Informações Principais
-        document.getElementById('modal-title').textContent = `Detalhes do Pedido ${order.id}`;
-        document.getElementById('client-name').textContent = order.client;
-        document.getElementById('client-email').textContent = order.email;
-        document.getElementById('delivery-address').textContent = order.address;
-        
-        // 2. Preenche Status e aplica a cor
-        const statusDetailElement = document.getElementById('order-status-detail');
-        statusDetailElement.textContent = order.status;
-        // Ajusta o nome da classe para o CSS: 'Em Processamento' -> 'em-processamento'
-        statusDetailElement.className = `status ${order.status.toLowerCase().replace(/\s/g, '-')}`;
-
-        // 3. Preenche Itens Adquiridos
-        itemsList.innerHTML = '';
-        order.items.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.name}</td>
-                <td>${item.cod}</td>
-                <td style="text-align: center;">${item.qty}</td>
-                <td style="text-align: right;">${item.subtotal}</td>
-            `;
-            itemsList.appendChild(row);
-        });
-
-        // 4. Preenche Resumo Financeiro
-        document.getElementById('subtotal').textContent = order.subtotal;
-        document.getElementById('shipping-cost').textContent = order.shipping;
-        document.getElementById('total-amount').textContent = order.total;
-
-        // 5. Mostra o Modal
+    function showOrderDetails(codigoPedido) {
+        // Mostrar loading
         modal.style.display = 'block';
+        document.getElementById('modal-title').textContent = 'Carregando...';
+        
+        // Buscar dados do pedido via AJAX
+        fetch(`get_pedido_details.php?codigo_pedido=${encodeURIComponent(codigoPedido)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert('Erro: ' + data.message);
+                    modal.style.display = 'none';
+                    return;
+                }
+                
+                const order = data.pedido;
+                
+                // 1. Preenche Títulos e Informações Principais
+                document.getElementById('modal-title').textContent = `Detalhes do Pedido ${order.id}`;
+                document.getElementById('client-name').textContent = order.cliente;
+                document.getElementById('client-email').textContent = order.email;
+                document.getElementById('delivery-address').textContent = order.endereco;
+                
+                // 2. Preenche Status e aplica a cor
+                const statusDetailElement = document.getElementById('order-status-detail');
+                statusDetailElement.textContent = order.status;
+                // Ajusta o nome da classe para o CSS
+                statusDetailElement.className = `status ${order.status.toLowerCase().replace(/\s/g, '-')}`;
+
+                // 3. Preenche Itens Adquiridos
+                itemsList.innerHTML = '';
+                order.itens.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.nome}</td>
+                        <td>${item.codigo}</td>
+                        <td style="text-align: center;">${item.quantidade}</td>
+                        <td style="text-align: right;">${item.subtotal}</td>
+                    `;
+                    itemsList.appendChild(row);
+                });
+
+                // 4. Preenche Resumo Financeiro
+                document.getElementById('subtotal').textContent = order.subtotal;
+                document.getElementById('shipping-cost').textContent = order.frete;
+                document.getElementById('total-amount').textContent = order.total;
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao carregar detalhes do pedido');
+                modal.style.display = 'none';
+            });
     }
 
     // Event Listeners para abrir o modal
     viewDetailsBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const orderId = e.currentTarget.getAttribute('data-id');
-            showOrderDetails(orderId);
+            const codigoPedido = e.currentTarget.getAttribute('data-id');
+            showOrderDetails(codigoPedido);
         });
     });
 
@@ -93,6 +85,78 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.style.display = 'none';
         }
     });
+
+    // Função de busca
+    function filterOrders(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        let visibleCount = 0;
+        
+        tableRows.forEach(row => {
+            const orderId = row.querySelector('[data-label="ID:"]')?.textContent.toLowerCase() || '';
+            const clientName = row.querySelector('[data-label="Cliente:"]')?.textContent.toLowerCase() || '';
+            const orderDataId = row.getAttribute('data-order-id')?.toLowerCase() || '';
+            
+            // Busca por código do pedido (com ou sem #) ou nome do cliente
+            const matches = orderId.includes(term) || 
+                           clientName.includes(term) || 
+                           orderDataId.includes(term);
+            
+            if (matches) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        // Mostrar mensagem se não houver resultados
+        const noDataElement = document.querySelector('.no-data');
+        if (visibleCount === 0 && term !== '') {
+            if (!noDataElement) {
+                const dataTable = document.querySelector('.data-table');
+                const noResultsDiv = document.createElement('div');
+                noResultsDiv.className = 'no-data';
+                noResultsDiv.innerHTML = `<p>Nenhum pedido encontrado para "${searchTerm}".</p>`;
+                dataTable.appendChild(noResultsDiv);
+            }
+        } else if (noDataElement && term !== '') {
+            noDataElement.remove();
+        }
+    }
+    
+    // Função para limpar busca
+    function clearSearch() {
+        searchInput.value = '';
+        filterOrders('');
+        clearSearchBtn.style.display = 'none';
+    }
+    
+    // Event listener para busca em tempo real
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            filterOrders(value);
+            
+            // Mostrar/ocultar botão de limpar
+            if (value.trim() !== '') {
+                clearSearchBtn.style.display = 'block';
+            } else {
+                clearSearchBtn.style.display = 'none';
+            }
+        });
+        
+        // Limpar busca ao pressionar Escape
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                clearSearch();
+            }
+        });
+    }
+    
+    // Event listener para botão de limpar
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', clearSearch);
+    }
 
     // Simulação do botão de Atualizar Status
     document.querySelector('.update-status-btn').addEventListener('click', () => {

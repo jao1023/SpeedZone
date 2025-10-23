@@ -1,3 +1,47 @@
+<?php
+session_start();
+require_once 'connection.php';
+
+// Buscar todos os pedidos
+$pedidos = array();
+try {
+    $sql = "SELECT DISTINCT pf.codigo_pedido as cod_pedido_base,
+                   p.status_pedido, pf.total_final, pf.data_pedido, pf.id_usuario,
+                   u.primeiro_nome, u.ultimo_nome, u.email
+            FROM pedidos_finalizados pf
+            LEFT JOIN pedidos p ON SUBSTRING(p.cod_pedido, 1, LOCATE('-', p.cod_pedido, LOCATE('-', p.cod_pedido) + 1) - 1) = pf.codigo_pedido
+            LEFT JOIN usuario u ON pf.id_usuario = u.id_usuario
+            ORDER BY pf.data_pedido DESC";
+    
+    $result = $conn->query($sql);
+    
+    while ($row = $result->fetch_assoc()) {
+        $pedidos[] = $row;
+    }
+    
+} catch (Exception $e) {
+    error_log("Erro ao buscar pedidos: " . $e->getMessage());
+}
+
+// Função para formatar data
+function formatarData($data) {
+    return date('d/m/Y', strtotime($data));
+}
+
+// Função para obter classe CSS do status
+function getStatusClass($status) {
+    switch ($status) {
+        case 'Entregue':
+            return 'delivered';
+        case 'Em Processamento':
+            return 'processing';
+        case 'Cancelado':
+            return 'cancelled';
+        default:
+            return 'processing';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -48,7 +92,15 @@
             <section id="vendas" class="management-section">
                 <div id="sales-list-view" class="sub-section active">
                     <div class="action-bar">
-                        <input type="text" placeholder="Buscar por Pedido ID ou Nome do Cliente..." class="search-input">
+                        <div class="search-container">
+                            <input type="text" placeholder="Buscar por Pedido ID ou Nome do Cliente..." class="search-input" id="search-input">
+                            <button type="button" class="clear-search-btn" id="clear-search-btn" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="search-info">
+                            <small>Digite o código do pedido (ex: SPDZ-0002) ou nome do cliente</small>
+                        </div>
                     </div>
                     
                     <div class="data-table">
@@ -61,38 +113,33 @@
                             <span>Ações</span>
                         </div>
                         
-                        <div class="table-row sales-grid-template" data-order-id="1001">
-                            <span class="cell-data" data-label="ID:">#SZ2025-1001</span>
-                            <span class="cell-data" data-label="Data:">30/09/2025</span>
-                            <span class="cell-data" data-label="Cliente:">João Silva</span>
-                            <span class="cell-data" data-label="Total:">R$ 2.559,90</span>
-                            <span class="cell-data status processing" data-label="Status:">Em Processamento</span>
-                            <span class="cell-data actions">
-                                <button class="action-btn view view-details-btn" title="Ver Detalhes" data-id="1001"><i class="fas fa-eye"></i></button>
-                            </span>
-                        </div>
-                        
-                        <div class="table-row sales-grid-template" data-order-id="1002">
-                            <span class="cell-data" data-label="ID:">#SZ2025-1002</span>
-                            <span class="cell-data" data-label="Data:">29/09/2025</span>
-                            <span class="cell-data" data-label="Cliente:">Maria Souza</span>
-                            <span class="cell-data" data-label="Total:">R$ 159,80</span>
-                            <span class="cell-data status delivered" data-label="Status:">Entregue</span>
-                            <span class="cell-data actions">
-                                <button class="action-btn view view-details-btn" title="Ver Detalhes" data-id="1002"><i class="fas fa-eye"></i></button>
-                            </span>
-                        </div>
-
-                        <div class="table-row sales-grid-template" data-order-id="1003">
-                            <span class="cell-data" data-label="ID:">#SZ2025-1003</span>
-                            <span class="cell-data" data-label="Data:">28/09/2025</span>
-                            <span class="cell-data" data-label="Cliente:">Pedro Santos</span>
-                            <span class="cell-data" data-label="Total:">R$ 4.999,00</span>
-                            <span class="cell-data status cancelled" data-label="Status:">Cancelado</span>
-                            <span class="cell-data actions">
-                                <button class="action-btn view view-details-btn" title="Ver Detalhes" data-id="1003"><i class="fas fa-eye"></i></button>
-                            </span>
-                        </div>
+                        <?php if (!empty($pedidos)): ?>
+                            <?php foreach ($pedidos as $pedido): ?>
+                                <div class="table-row sales-grid-template" data-order-id="<?php echo htmlspecialchars($pedido['cod_pedido_base']); ?>">
+                                    <span class="cell-data" data-label="ID:">#<?php echo htmlspecialchars($pedido['cod_pedido_base']); ?></span>
+                                    <span class="cell-data" data-label="Data:"><?php echo formatarData($pedido['data_pedido']); ?></span>
+                                    <span class="cell-data" data-label="Cliente:">
+                                        <?php 
+                                        $nome_cliente = trim($pedido['primeiro_nome'] . ' ' . $pedido['ultimo_nome']);
+                                        echo htmlspecialchars($nome_cliente ?: 'Cliente não encontrado'); 
+                                        ?>
+                                    </span>
+                                    <span class="cell-data" data-label="Total:">R$ <?php echo number_format($pedido['total_final'], 2, ',', '.'); ?></span>
+                                    <span class="cell-data status <?php echo getStatusClass($pedido['status_pedido']); ?>" data-label="Status:">
+                                        <?php echo htmlspecialchars($pedido['status_pedido']); ?>
+                                    </span>
+                                    <span class="cell-data actions">
+                                        <button class="action-btn view view-details-btn" title="Ver Detalhes" data-id="<?php echo htmlspecialchars($pedido['cod_pedido_base']); ?>">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="no-data">
+                                <p>Nenhum pedido encontrado.</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </section>
