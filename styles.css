@@ -115,7 +115,8 @@ body {
 }
 
 .banner-image {
-    max-width: 40%;
+    max-width: 13%;
+    max-height: 10%;
     height: auto;
     display: block;
 }

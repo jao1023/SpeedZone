@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo PHP: processar_edicao_cupom.php - Processa o UPDATE do Cupom
 

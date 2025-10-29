@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo PHP: cupons.php - Gerenciamento de Cupons (Listagem, Inserção e Feedback)
 
@@ -269,6 +270,41 @@ $conn->close();
             align-items: center;
             margin-bottom: 20px;
         }
+
+        /* Barra de busca de cupons: mantém a lupa dentro do input */
+        .search-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .search-container {
+            position: relative;
+            display: flex;
+            max-width: 450px;
+            width: 100%;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px 40px 10px 15px; /* espaço para a lupa à direita */
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .search-icon-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            padding: 0 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-icon-btn:hover { color: #28a745; }
     </style>
 </head>
 

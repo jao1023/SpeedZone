@@ -16,6 +16,30 @@ if (isset($_SESSION['cupom_aplicado'])) {
 }
 
 $total_final = $total_carrinho + $frete - $desconto_cupom;
+
+// Buscar endereço do usuário logado (se houver)
+$user_id = $_SESSION['user_id'] ?? null;
+$user_address = null;
+$endereco_completo = false;
+if ($user_id) {
+    $sqlUser = "SELECT cep, rua, numero, complemento, bairro, cidade, estado FROM usuario WHERE id_usuario = ?";
+    if ($stmt = $conn->prepare($sqlUser)) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result && $result->num_rows === 1) {
+            $user_address = $result->fetch_assoc();
+            $cep = preg_replace('/\D/', '', $user_address['cep'] ?? '');
+            $endereco_completo = !empty($cep) && strlen($cep) === 8
+                && !empty($user_address['rua'])
+                && !empty($user_address['numero'])
+                && !empty($user_address['bairro'])
+                && !empty($user_address['cidade'])
+                && !empty($user_address['estado']);
+        }
+        $stmt->close();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -67,6 +91,31 @@ $total_final = $total_carrinho + $frete - $desconto_cupom;
                 <div class="summary-details">
                     <h2 class="summary-title">Resumo do Pedido</h2>
                     
+                    <!-- Endereço de Entrega -->
+                    <div class="address-section" style="margin-bottom: 16px;">
+                        <h3 style="margin: 0 0 8px; font-size: 16px;">Endereço de Entrega</h3>
+                        <?php if ($user_id && $user_address): ?>
+                            <?php if ($endereco_completo): ?>
+                                <div style="font-size: 14px; color: #333;">
+                                    <div><?php echo htmlspecialchars($user_address['rua']); ?>, <?php echo htmlspecialchars($user_address['numero']); ?><?php echo !empty($user_address['complemento']) ? ' - ' . htmlspecialchars($user_address['complemento']) : ''; ?></div>
+                                    <div><?php echo htmlspecialchars($user_address['bairro']); ?> - <?php echo htmlspecialchars($user_address['cidade']); ?>/<?php echo htmlspecialchars($user_address['estado']); ?></div>
+                                    <div>CEP: <?php echo htmlspecialchars(substr(preg_replace('/\D/','', $user_address['cep']),0,5) . '-' . substr(preg_replace('/\D/','', $user_address['cep']),5)); ?></div>
+                                </div>
+                            <?php else: ?>
+                                <div style="font-size: 14px; color: #b45309; background: #fffbeb; border: 1px solid #f59e0b; padding: 8px; border-radius: 6px;">Endereço incompleto. Atualize para continuar.</div>
+                            <?php endif; ?>
+                            <div style="margin-top: 8px;">
+                                <a href="config.php" class="cupom-btn" style="text-decoration:none; display:inline-block;">Alterar Endereço</a>
+                            </div>
+                        <?php else: ?>
+                            <div style="font-size: 14px; color: #991b1b; background: #fee2e2; border: 1px solid #ef4444; padding: 8px; border-radius: 6px;">Faça login e cadastre um endereço para continuar.</div>
+                            <div style="margin-top: 8px; display: flex; gap: 8px;">
+                                <a href="login.php" class="cupom-btn" style="text-decoration:none; display:inline-block;">Entrar</a>
+                                <a href="config.php" class="cupom-btn" style="text-decoration:none; display:inline-block;">Cadastrar Endereço</a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    
                     <!-- Campo de Cupom -->
                     <div class="cupom-section">
                         <div class="cupom-input-group">
@@ -101,7 +150,11 @@ $total_final = $total_carrinho + $frete - $desconto_cupom;
                     </div>
                 </div>
                 <?php if (!empty($carrinho_itens)): ?>
-                    <button type="button" class="checkout-btn" onclick="finalizarCompra()">Finalizar Compra</button>
+                    <?php if ($user_id && $endereco_completo): ?>
+                        <button type="button" class="checkout-btn" onclick="finalizarCompra()">Finalizar Compra</button>
+                    <?php else: ?>
+                        <button type="button" class="checkout-btn" onclick="alert('Cadastre um endereço completo para finalizar a compra.');" disabled style="opacity:0.7; cursor:not-allowed;">Finalizar Compra</button>
+                    <?php endif; ?>
                     <button type="button" class="clear-cart-btn" onclick="limparCarrinho()">Limpar Carrinho</button>
                 <?php endif; ?>
             </div>

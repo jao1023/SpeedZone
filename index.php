@@ -114,7 +114,7 @@ try {
             <div class="banner-text-box">
                 <h1 class="banner-title">As melhores peças de alta qualidade para aquele projetinho você encontra aqui na SpeedZone AutoParts</h1>
             </div>
-            <img src="https://i.imgur.com/7w3w5Tq.png" alt="Produto de alta qualidade" class="banner-image">
+            <img src="./assets/Design sem nome.png" alt="Produto de alta qualidade" class="banner-image">
         </div>
 
         <section class="catalog-section">

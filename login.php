@@ -1,8 +1,6 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo: login.php
-
-// 1. INICIA A SESSÃO
-session_start();
 
 // Incluir Conexão
 // Assume-se que 'connection.php' define a variável de conexão como $conn

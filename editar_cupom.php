@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo PHP: editar_cupom.php - Formulário para Edição de Cupom
 

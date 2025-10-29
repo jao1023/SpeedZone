@@ -1,5 +1,5 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
-session_start();
 require_once 'connection.php';
 require_once 'carrinho_functions.php';
 
@@ -13,10 +13,19 @@ try {
     switch ($acao) {
         case 'adicionar':
             if ($produto_id > 0 && $quantidade > 0) {
-                adicionarAoCarrinho($produto_id, $quantidade);
-                $response['success'] = true;
-                $response['message'] = 'Produto adicionado ao carrinho!';
-                $response['total_itens'] = contarItensCarrinho();
+                $resultado = adicionarAoCarrinho($produto_id, $quantidade);
+                if (is_array($resultado)) {
+                    $response = array_merge($response, $resultado);
+                    if ($resultado['success']) {
+                        $response['total_itens'] = contarItensCarrinho();
+                    }
+                } else if ($resultado === true) {
+                    $response['success'] = true;
+                    $response['message'] = 'Produto adicionado ao carrinho!';
+                    $response['total_itens'] = contarItensCarrinho();
+                } else {
+                    $response['message'] = 'Não foi possível adicionar ao carrinho.';
+                }
             } else {
                 $response['message'] = 'Dados inválidos.';
             }
@@ -35,10 +44,19 @@ try {
             
         case 'atualizar':
             if ($produto_id > 0) {
-                atualizarQuantidade($produto_id, $quantidade);
-                $response['success'] = true;
-                $response['message'] = 'Quantidade atualizada!';
-                $response['total_itens'] = contarItensCarrinho();
+                $resultado = atualizarQuantidade($produto_id, $quantidade);
+                if (is_array($resultado)) {
+                    $response = array_merge($response, $resultado);
+                    if ($resultado['success']) {
+                        $response['total_itens'] = contarItensCarrinho();
+                    }
+                } else if ($resultado === true) {
+                    $response['success'] = true;
+                    $response['message'] = 'Quantidade atualizada!';
+                    $response['total_itens'] = contarItensCarrinho();
+                } else {
+                    $response['message'] = 'Não foi possível atualizar a quantidade.';
+                }
             } else {
                 $response['message'] = 'Dados inválidos.';
             }
@@ -58,8 +76,38 @@ try {
             break;
             
         case 'finalizar_compra':
-            // Para teste, usar ID de usuário 1 (você pode ajustar conforme necessário)
-            $id_usuario = 1; // Em um sistema real, isso viria da sessão do usuário logado
+            // Usar usuário logado
+            $id_usuario = $_SESSION['user_id'] ?? null;
+            if (!$id_usuario) {
+                $response['success'] = false;
+                $response['message'] = 'É necessário estar logado para finalizar a compra.';
+                break;
+            }
+
+            // Validar se usuário possui endereço completo
+            $sql = "SELECT cep, rua, numero, bairro, cidade, estado FROM usuario WHERE id_usuario = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id_usuario);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result && $result->num_rows === 1) {
+                $u = $result->fetch_assoc();
+                $cep = preg_replace('/\D/', '', $u['cep'] ?? '');
+                $endereco_ok = !empty($cep) && strlen($cep) === 8 && !empty($u['rua']) && !empty($u['numero']) && !empty($u['bairro']) && !empty($u['cidade']) && !empty($u['estado']);
+                if (!$endereco_ok) {
+                    $response['success'] = false;
+                    $response['message'] = 'Cadastre um endereço completo para finalizar a compra.';
+                    $stmt->close();
+                    break;
+                }
+            } else {
+                $response['success'] = false;
+                $response['message'] = 'Usuário não encontrado.';
+                $stmt->close();
+                break;
+            }
+            $stmt->close();
+
             $resultado = finalizarCompra($id_usuario);
             $response = $resultado;
             break;

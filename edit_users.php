@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo: edit_usuario_handler.php
 

@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo PHP: novo_cupom.php - Formulário para Novo Cupom
 ?>

@@ -1,5 +1,5 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
-session_start();
 require_once 'carrinho_functions.php';
 
 echo "<h2>Teste do Carrinho</h2>";

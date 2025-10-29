@@ -1,9 +1,14 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
-session_start();
 require_once 'connection.php';
 
-// Para teste, usar ID de usuário 1 (em um sistema real, isso viria da sessão)
-$id_usuario = 1; // $_SESSION['user_id'] ?? null;
+// Exigir login
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
+    header("Location: login.php");
+    exit;
+}
+
+$id_usuario = $_SESSION['user_id'] ?? null;
 
 // Buscar pedidos do usuário
 $pedidos = array();

@@ -1,5 +1,5 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
-session_start();
 require_once 'connection.php';
 
 // Buscar todos os pedidos

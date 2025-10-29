@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo PHP: delete_cupom.php - Processa a exclusão de um cupom
 

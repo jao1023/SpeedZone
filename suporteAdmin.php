@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo: suporteAdmin.php (Com a lógica de atualização integrada)
 // Inclui o arquivo de conexão. Certifique-se de que 'connection.php' exista e funcione.
