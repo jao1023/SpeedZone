@@ -51,19 +51,16 @@ try {
 
 } catch (Exception $e) {
     error_log("Erro em index.php: " . $e->getMessage());
-    // Em caso de erro, manter array vazio para não quebrar a página
+    // Em caso de erro, manter array vazio
 } finally {
-    // Fechar conexão
     if (isset($conn)) {
         $conn->close();
     }
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +72,6 @@ try {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
-
 <body>
     <header class="navbar">
         <div class="logo">
@@ -135,7 +131,13 @@ try {
                 <?php if (!empty($produtos)): ?>
                     <?php foreach ($produtos as $produto): ?>
                         <div class="product-card">
-                            <img src="https://i.imgur.com/vHqQ9zG.png" alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>" class="product-img">
+                            <img 
+                                src="<?php echo htmlspecialchars($produto['imagem'] ?? 'uploads/sem_imagem.png'); ?>" 
+                                alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>" 
+                                class="product-img"
+                                style="width:200px; height:200px; object-fit:contain;"
+                                onerror="this.src='uploads/sem_imagem.png';"
+                            >
                             <h3 class="product-name"><?php echo htmlspecialchars($produto['nome_produto']); ?></h3>
                             <p class="product-description"><?php echo htmlspecialchars($produto['descricao_produto']); ?></p>
                             <div class="product-price">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></div>
@@ -166,5 +168,4 @@ try {
 
     <script src="carrossel.js"></script>
 </body>
-
 </html>

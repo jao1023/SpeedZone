@@ -66,7 +66,11 @@ if ($user_id) {
                 <?php if (!empty($carrinho_itens)): ?>
                     <?php foreach ($carrinho_itens as $item): ?>
                         <div class="cart-item" data-produto-id="<?php echo $item['id_produto']; ?>">
-                            <img src="https://i.imgur.com/vHqQ9zG.png" alt="<?php echo htmlspecialchars($item['nome_produto']); ?>" class="item-image">
+                            <img src="<?php echo htmlspecialchars($item['imagem'] ?? 'uploads/sem_imagem.png'); ?>" 
+                                 alt="<?php echo htmlspecialchars($item['nome_produto']); ?>" 
+                                 class="item-image" 
+                                 style="width:120px; height:120px; object-fit:contain;"
+                                 onerror="this.src='uploads/sem_imagem.png';">
                             <div class="item-details">
                                 <p class="item-name"><?php echo htmlspecialchars($item['nome_produto']); ?></p>
                                 <p class="item-price">R$ <?php echo number_format($item['preco'], 2, ',', '.'); ?></p>
@@ -165,138 +169,61 @@ if ($user_id) {
         function atualizarQuantidade(produtoId, quantidade) {
             fetch('carrinho_action.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 body: `acao=atualizar&produto_id=${produtoId}&quantidade=${quantidade}`
             })
             .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload(); // Recarregar página para atualizar totais
-                } else {
-                    alert('Erro: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao atualizar quantidade');
-            });
+            .then(data => { if (data.success) location.reload(); else alert('Erro: ' + data.message); })
+            .catch(error => { console.error('Erro:', error); alert('Erro ao atualizar quantidade'); });
         }
 
         function removerItem(produtoId) {
             if (confirm('Tem certeza que deseja remover este item do carrinho?')) {
                 fetch('carrinho_action.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: `acao=remover&produto_id=${produtoId}`
                 })
                 .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload(); // Recarregar página
-                    } else {
-                        alert('Erro: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    alert('Erro ao remover item');
-                });
+                .then(data => { if (data.success) location.reload(); else alert('Erro: ' + data.message); })
+                .catch(error => { console.error('Erro:', error); alert('Erro ao remover item'); });
             }
         }
 
         function limparCarrinho() {
             if (confirm('Tem certeza que deseja limpar todo o carrinho?')) {
-                fetch('carrinho_action.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'acao=limpar'
-                })
+                fetch('carrinho_action.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'acao=limpar' })
                 .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload(); // Recarregar página
-                    } else {
-                        alert('Erro: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    alert('Erro ao limpar carrinho');
-                });
+                .then(data => { if (data.success) location.reload(); else alert('Erro: ' + data.message); })
+                .catch(error => { console.error('Erro:', error); alert('Erro ao limpar carrinho'); });
             }
         }
 
         function aplicarCupom() {
             const codigoCupom = document.getElementById('cupom-codigo').value.trim();
             const messageDiv = document.getElementById('cupom-message');
-            
-            if (!codigoCupom) {
-                messageDiv.innerHTML = '<span class="error">Digite um código de cupom</span>';
-                return;
-            }
-            
-            fetch('carrinho_action.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `acao=aplicar_cupom&codigo_cupom=${encodeURIComponent(codigoCupom)}`
-            })
+            if (!codigoCupom) { messageDiv.innerHTML = '<span class="error">Digite um código de cupom</span>'; return; }
+            fetch('carrinho_action.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `acao=aplicar_cupom&codigo_cupom=${encodeURIComponent(codigoCupom)}` })
             .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    messageDiv.innerHTML = `<span class="success">${data.message}</span>`;
-                    atualizarResumoComCupom(data.desconto, data.total_final);
-                } else {
-                    messageDiv.innerHTML = `<span class="error">${data.message}</span>`;
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                messageDiv.innerHTML = '<span class="error">Erro ao aplicar cupom</span>';
-            });
+            .then(data => { if (data.success) { messageDiv.innerHTML = `<span class="success">${data.message}</span>`; atualizarResumoComCupom(data.desconto, data.total_final); } else { messageDiv.innerHTML = `<span class="error">${data.message}</span>`; } })
+            .catch(error => { console.error('Erro:', error); messageDiv.innerHTML = '<span class="error">Erro ao aplicar cupom</span>'; });
         }
 
         function atualizarResumoComCupom(desconto, totalFinal) {
-            // Mostrar linha de desconto
             const discountLine = document.getElementById('cupom-discount-line');
             const discountPrice = discountLine.querySelector('.discount-price');
             discountPrice.textContent = `-R$ ${desconto.toFixed(2).replace('.', ',')}`;
             discountLine.style.display = 'flex';
-            
-            // Atualizar total
             const totalPrice = document.querySelector('.total-price');
             totalPrice.textContent = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
         }
 
         function finalizarCompra() {
             if (confirm('Tem certeza que deseja finalizar a compra?')) {
-                fetch('carrinho_action.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'acao=finalizar_compra'
-                })
+                fetch('carrinho_action.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'acao=finalizar_compra' })
                 .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(`Compra finalizada com sucesso!\nCódigo do pedido: ${data.codigo_pedido}`);
-                        location.reload(); // Recarregar página para mostrar carrinho vazio
-                    } else {
-                        alert('Erro: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    alert('Erro ao finalizar compra');
-                });
+                .then(data => { if (data.success) { alert(`Compra finalizada com sucesso!\nCódigo do pedido: ${data.codigo_pedido}`); location.reload(); } else { alert('Erro: ' + data.message); } })
+                .catch(error => { console.error('Erro:', error); alert('Erro ao finalizar compra'); });
             }
         }
     </script>

@@ -67,7 +67,12 @@ if (!$produto) {
     </a>
     <div class="product-container">
         <div class="product-image-section">
-            <img src="https://i.imgur.com/vHqQ9zG.png" alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>" class="product-image">
+            <img 
+                src="<?php echo htmlspecialchars($produto['imagem'] ?? 'uploads/sem_imagem.png'); ?>" 
+                alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>" 
+                class="product-image"
+                onerror="this.src='uploads/sem_imagem.png';"
+            >
         </div>
 
         <div class="product-details-section">
@@ -135,5 +140,4 @@ if (!$produto) {
         }
     </script>
 </body>
-
 </html>

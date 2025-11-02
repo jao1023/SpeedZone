@@ -181,7 +181,7 @@ try {
                 <h2 class="section-heading" id="form-title">Adicionar Novo Produto</h2>
 
                 <div class="form-container">
-                    <form action="novo_produto.php" method="POST" class="product-form">
+                    <form action="novo_produto.php" method="POST" class="product-form" enctype="multipart/form-data">
 
                         <input type="hidden" id="product-id" name="id" value="">
 
@@ -328,6 +328,10 @@ try {
                             </div>
                         </fieldset>
 
+                                    <div class="form-group">
+    <label for="imagem">Imagem do Produto *</label>
+    <input type="file" id="imagem" name="imagem" accept="image/*" required>
+</div>
 
                         <button type="submit" class="submit-btn" id="submit-product-btn">Salvar Produto</button>
                     </form>
