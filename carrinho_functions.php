@@ -445,7 +445,7 @@ function finalizarCompra($id_usuario = null) {
 			$valor_total_item = (float)$pRow['preco'] * $quantidade_item;
 			$codigo_item = $codigo_pedido . '-' . $item_counter;
 
-			$sql_item = "INSERT INTO pedidos (cod_pedido, id_cliente, id_produto, valor_total, status_pedido) VALUES (?, ?, ?, ?, 'Em Processo de entrega')";
+			$sql_item = "INSERT INTO pedidos (cod_pedido, id_cliente, id_produto, valor_total, status_pedido) VALUES (?, ?, ?, ?, 'Separação do pedido')";
 			$stmt_item = $conn->prepare($sql_item);
 			$stmt_item->bind_param("siid", $codigo_item, $id_usuario, $produto_id, $valor_total_item);
 			$stmt_item->execute();

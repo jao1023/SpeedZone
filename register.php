@@ -108,16 +108,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $error = "Este email ou CPF já está cadastrado.";
                 } else {
                     
-                    // 4. Criptografar Senha
+                    // 4. NOVO: Verificar se já existe um Administrador no sistema
+                    $admin_check_sql = "SELECT id_usuario FROM usuario WHERE cargo = 'Administrador' LIMIT 1";
+                    $admin_exists = false;
+                    
+                    if ($stmt_admin = $conn->prepare($admin_check_sql)) {
+                        $stmt_admin->execute();
+                        $stmt_admin->store_result();
+                        
+                        if ($stmt_admin->num_rows > 0) {
+                            $admin_exists = true;
+                        }
+                        $stmt_admin->close();
+                    }
+                    
+                    // Define o cargo baseado na existência de administrador
+                    $user_cargo = $admin_exists ? 'Cliente' : 'Administrador';
+                    
+                    // 5. Criptografar Senha
                     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                     
-                    // 5. Inserir Novo Usuário (Cargo padrão: Cliente, Status padrão: Ativo)
+                    // 6. Inserir Novo Usuário (Status padrão: Ativo)
                     $insert_sql = "
                         INSERT INTO usuario (
                             primeiro_nome, ultimo_nome, email, cpf, cargo, status_conta, senha
                         ) VALUES (?, ?, ?, ?, ?, ?, ?)";
                     
-                    $default_cargo = 'Cliente';
                     $default_status = 'Ativo';
                     
                     if ($stmt_insert = $conn->prepare($insert_sql)) {
@@ -127,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $lastName, 
                             $email, 
                             $cpf_final_to_db, // Insere o CPF FORMATADO
-                            $default_cargo, 
+                            $user_cargo, // Cargo definido dinamicamente
                             $default_status, 
                             $hashed_password
                         );

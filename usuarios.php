@@ -1,9 +1,12 @@
 <?php require_once __DIR__ . '/session.php'; ?>
 <?php
 // Arquivo: usuarios.php
-
-// Inclui o arquivo de conexão, que define a variável $conn
-// NOTA: Se você está usando $conn no seu connection.php, mude $conn para $conn aqui.
+$user_cargo = $_SESSION['cargo'] ?? 'Cliente';
+if (!in_array($user_cargo, ['Funcionario', 'Administrador'])) {
+    // Redireciona para a página principal se não tiver permissão
+    header("Location: index.php?error=access_denied");
+    exit;
+}
 require_once 'connection.php'; 
 
 // 1. LÓGICA DE PESQUISA

@@ -1,12 +1,12 @@
 <?php require_once __DIR__ . '/session.php'; ?>
 <?php
-// Arquivo PHP: cupons.php - Gerenciamento de Cupons (Listagem, Inserção e Feedback)
 
-// =======================================================
-// 1. INCLUSÃO E VERIFICAÇÃO DE CONEXÃO
-// =======================================================
-
-// Inclui o arquivo de conexão, que define a variável $conn (assumindo MySQLi)
+$user_cargo = $_SESSION['cargo'] ?? 'Cliente';
+if (!in_array($user_cargo, ['Funcionario', 'Administrador'])) {
+    // Redireciona para a página principal se não tiver permissão
+    header("Location: index.php?error=access_denied");
+    exit;
+}
 require_once 'connection.php'; 
 
 // Variáveis para mensagens de feedback

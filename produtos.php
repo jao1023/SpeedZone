@@ -1,4 +1,14 @@
+<?php require_once __DIR__ . '/session.php'; ?>
 <?php
+
+$user_cargo = $_SESSION['cargo'] ?? 'Cliente';
+if (!in_array($user_cargo, ['Funcionario', 'Administrador'])) {
+    // Redireciona para a página principal se não tiver permissão
+    header("Location: index.php?error=access_denied");
+    exit;
+}
+
+
 require_once 'connection.php';
 
 // Array para armazenar os produtos

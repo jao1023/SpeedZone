@@ -18,6 +18,10 @@ if (isset($_GET['busca'])) {
     $termo_busca = trim($_GET['busca']);
 }
 
+// Verificar o cargo do usuário logado
+$user_cargo = $_SESSION['cargo'] ?? 'Cliente';
+$pode_gerenciar = in_array($user_cargo, ['Funcionario', 'Administrador']);
+
 try {
     // Verificar se a conexão foi estabelecida
     if ($conn->connect_error) {
@@ -85,8 +89,10 @@ try {
                 <a href="carrinho.php"><i class="fas fa-shopping-cart"></i> Carrinho</a>
                 <a href="pedidos.php"><i class="bi bi-truck-front-fill"></i> Meus Pedidos</a>
                 <a href="config.php"><i class="fas fa-cog"></i> Configurações</a>
-                <a href="admin.php"><i class="fas fa-cog"></i> Gerenciar Loja</a>
-                <a href="suporte.php"><i class="fas fa-cog"></i> Suporte</a>
+                <?php if ($pode_gerenciar): ?>
+                    <a href="admin.php"><i class="fas fa-tools"></i> Gerenciar Loja</a>
+                <?php endif; ?>
+                <a href="suporte.php"><i class="fas fa-headset"></i> Suporte</a>
                 <a href="login.php"><i class="fas fa-sign-out-alt"></i> Sair</a>
             </div>
         </div>

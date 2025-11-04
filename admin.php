@@ -1,5 +1,19 @@
 <?php require_once __DIR__ . '/session.php'; ?>
 <?php
+// Verificar se o usuário está logado
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
+    header("Location: login.php");
+    exit;
+}
+
+// Verificar se o usuário tem permissão (Funcionario ou Administrador)
+$user_cargo = $_SESSION['cargo'] ?? 'Cliente';
+if (!in_array($user_cargo, ['Funcionario', 'Administrador'])) {
+    // Redireciona para a página principal se não tiver permissão
+    header("Location: index.php?error=access_denied");
+    exit;
+}
+
 require_once 'connection.php';
 
 $total_vendas_mes = 0.0;
@@ -102,7 +116,7 @@ try {
         </aside>
 
         <main class="main-content">
-            <h1 class="page-title">Bem-vindo, Administrador!</h1>
+            <h1 class="page-title">Bem-vindo, <?php echo htmlspecialchars($user_cargo); ?>!</h1>
 
             <section id="dashboard" class="dashboard-section active">
                 <div class="stats-grid">
@@ -224,4 +238,3 @@ try {
 </body>
 
 </html>
-            

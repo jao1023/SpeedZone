@@ -11,8 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearSearchBtn = document.querySelector('.clear-search-btn');
     const tableRows = document.querySelectorAll('.table-row');
 
+    // Variável para armazenar o código do pedido atual
+    let currentOrderCode = null;
+
     // Função para preencher e mostrar o modal
     function showOrderDetails(codigoPedido) {
+        currentOrderCode = codigoPedido;
+        
         // Mostrar loading
         modal.style.display = 'block';
         document.getElementById('modal-title').textContent = 'Carregando...';
@@ -35,11 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('client-email').textContent = order.email;
                 document.getElementById('delivery-address').textContent = order.endereco;
                 
-                // 2. Preenche Status e aplica a cor
+                // 2. Preenche Status com SELECT
                 const statusDetailElement = document.getElementById('order-status-detail');
-                statusDetailElement.textContent = order.status;
-                // Ajusta o nome da classe para o CSS
-                statusDetailElement.className = `status ${order.status.toLowerCase().replace(/\s/g, '-')}`;
+                statusDetailElement.innerHTML = `
+                    <select id="status-select" class="status-select">
+                        <option value="Separação do pedido" ${order.status === 'Separação do pedido' ? 'selected' : ''}>Separação do pedido</option>
+                        <option value="Em Transporte" ${order.status === 'Em Transporte' ? 'selected' : ''}>Em Transporte</option>
+                        <option value="Entregue" ${order.status === 'Entregue' ? 'selected' : ''}>Entregue</option>
+                    </select>
+                `;
 
                 // 3. Preenche Itens Adquiridos
                 itemsList.innerHTML = '';
@@ -60,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('total-amount').textContent = order.total;
             })
             .catch(error => {
-                console.error('Erro:', error);
+                console.error('Erro ao carregar detalhes:', error);
                 alert('Erro ao carregar detalhes do pedido');
                 modal.style.display = 'none';
             });
@@ -158,8 +167,84 @@ document.addEventListener('DOMContentLoaded', () => {
         clearSearchBtn.addEventListener('click', clearSearch);
     }
 
-    // Simulação do botão de Atualizar Status
+    // ATUALIZAR STATUS DO PEDIDO
     document.querySelector('.update-status-btn').addEventListener('click', () => {
-        alert("Simulação: Abrir interface de atualização de status do pedido.");
+        const statusSelect = document.getElementById('status-select');
+        
+        if (!statusSelect) {
+            alert('Erro: Elemento de status não encontrado.');
+            return;
+        }
+
+        const newStatus = statusSelect.value;
+        
+        if (!currentOrderCode) {
+            alert('Erro: Código do pedido não encontrado.');
+            return;
+        }
+
+        console.log('Tentando atualizar:', currentOrderCode, 'para', newStatus);
+
+        // Confirmar mudança
+        if (!confirm(`Deseja realmente alterar o status para "${newStatus}"?`)) {
+            return;
+        }
+
+        // Desabilitar botão durante o processo
+        const updateBtn = document.querySelector('.update-status-btn');
+        updateBtn.disabled = true;
+        updateBtn.textContent = 'Salvando...';
+
+        // Enviar requisição para atualizar status
+        fetch('update_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                codigo_pedido: currentOrderCode,
+                novo_status: newStatus
+            })
+        })
+        .then(response => {
+            console.log('Status da resposta:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Resposta do servidor:', data);
+            
+            if (data.success) {
+                alert('Status atualizado com sucesso!');
+                
+                // Atualizar a tabela principal sem recarregar a página
+                const row = document.querySelector(`[data-order-id="${currentOrderCode}"]`);
+                if (row) {
+                    const statusCell = row.querySelector('.status');
+                    statusCell.textContent = newStatus;
+                    
+                    // Atualizar classe CSS do status
+                    statusCell.className = 'cell-data status';
+                    if (newStatus === 'Entregue') {
+                        statusCell.classList.add('delivered');
+                    } else {
+                        statusCell.classList.add('processing');
+                    }
+                }
+                
+                // Fechar modal
+                modal.style.display = 'none';
+            } else {
+                alert('Erro ao atualizar status: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+            alert('Erro ao atualizar status do pedido: ' + error.message);
+        })
+        .finally(() => {
+            // Reabilitar botão
+            updateBtn.disabled = false;
+            updateBtn.textContent = 'Atualizar Status';
+        });
     });
 });

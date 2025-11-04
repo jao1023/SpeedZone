@@ -51,12 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $_SESSION['primeiro_nome'] = $user['primeiro_nome'];
                         $_SESSION['cargo'] = $user['cargo'];
 
-                        // 5. Redirecionamento baseado no cargo
-                        if ($user['cargo'] === 'Administrador' || $user['cargo'] === 'Funcionario') {
-                            header("Location: admin.php"); // Redireciona para o painel admin
-                        } else {
-                            header("Location: cliente_dashboard.php"); // Redireciona para o painel do cliente
-                        }
+                        // 5. Redirecionamento para a página principal
+                        header("Location: index.php");
                         exit();
                     }
                 } else {
