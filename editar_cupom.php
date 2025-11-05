@@ -121,7 +121,6 @@ $conn->close();
                         <label for="tipo_desconto">Tipo de Desconto</label>
                         <select id="tipo_desconto" name="tipo_desconto" required>
                             <option value="percentual" <?php echo ($tipo_atual == 'percentual' ? 'selected' : ''); ?>>Percentual (%)</option>
-                            <option value="fixo" <?php echo ($tipo_atual == 'fixo' ? 'selected' : ''); ?>>Valor Fixo (R$)</option>
                             <option value="frete" <?php echo ($tipo_atual == 'frete' ? 'selected' : ''); ?>>Frete Grátis</option>
                         </select>
                     </div>

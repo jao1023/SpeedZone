@@ -45,9 +45,6 @@ function getUserCartItemsFromDb(int $userId) {
 	return $items;
 }
 
-/**
- * Adicionar item ao carrinho com validação de estoque
- */
 function adicionarAoCarrinho($produto_id, $quantidade = 1) {
 	global $conn;
 
@@ -55,7 +52,6 @@ function adicionarAoCarrinho($produto_id, $quantidade = 1) {
 		return array('success' => false, 'message' => 'Quantidade inválida.');
 	}
 
-	// Verificar estoque atual do produto
 	$sql = "SELECT qtd_estoque, nome_produto FROM produtos WHERE id_produto = ?";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("i", $produto_id);
@@ -75,9 +71,7 @@ function adicionarAoCarrinho($produto_id, $quantidade = 1) {
 
 	$userId = getLoggedInUserId();
 	if ($userId) {
-		// DB-backed cart
 		$idCarrinho = getOrCreateActiveCartIdForUser($userId);
-		// Quantidade existente
 		$qStmt = $conn->prepare("SELECT quantidade FROM carrinho_itens WHERE id_carrinho = ? AND id_produto = ?");
 		$qStmt->bind_param("ii", $idCarrinho, $produto_id);
 		$qStmt->execute();
@@ -94,7 +88,6 @@ function adicionarAoCarrinho($produto_id, $quantidade = 1) {
 			$u->execute();
 			$u->close();
 		} else {
-			// inserir com preco_unitario e subtotal coerentes ao momento
 			$preco = 0.0;
 			$p2 = $conn->prepare("SELECT preco FROM produtos WHERE id_produto = ?");
 			$p2->bind_param("i", $produto_id);
@@ -111,7 +104,6 @@ function adicionarAoCarrinho($produto_id, $quantidade = 1) {
 		return array('success' => true, 'message' => 'Produto adicionado ao carrinho!');
 	}
 
-	// Session-backed cart (guest)
 	$quantidade_atual_no_carrinho = isset($_SESSION['carrinho'][$produto_id]) ? intval($_SESSION['carrinho'][$produto_id]) : 0;
 	$quantidade_desejada = $quantidade_atual_no_carrinho + intval($quantidade);
 	if ($quantidade_desejada > $estoque_disponivel) {
@@ -121,9 +113,6 @@ function adicionarAoCarrinho($produto_id, $quantidade = 1) {
 	return array('success' => true, 'message' => 'Produto adicionado ao carrinho!');
 }
 
-/**
- * Remover item do carrinho
- */
 function removerDoCarrinho($produto_id) {
 	global $conn;
 	$userId = getLoggedInUserId();
@@ -142,9 +131,6 @@ function removerDoCarrinho($produto_id) {
 	return false;
 }
 
-/**
- * Atualizar quantidade de um item no carrinho com validação de estoque
- */
 function atualizarQuantidade($produto_id, $quantidade) {
 	global $conn;
 
@@ -153,7 +139,6 @@ function atualizarQuantidade($produto_id, $quantidade) {
 		return array('success' => $removido, 'message' => $removido ? 'Item removido do carrinho.' : 'Falha ao remover item.');
 	}
 
-	// Verificar estoque atual do produto
 	$sql = "SELECT qtd_estoque FROM produtos WHERE id_produto = ?";
 	$stmt = $conn->prepare($sql);
 	$stmt->bind_param("i", $produto_id);
@@ -188,9 +173,6 @@ function atualizarQuantidade($produto_id, $quantidade) {
 	return array('success' => true, 'message' => 'Quantidade atualizada!');
 }
 
-/**
- * Obter todos os itens do carrinho com detalhes do produto
- */
 function obterCarrinhoComDetalhes() {
 	global $conn;
 	$userId = getLoggedInUserId();
@@ -225,9 +207,6 @@ function obterCarrinhoComDetalhes() {
 	return $carrinho_detalhado;
 }
 
-/**
- * Calcular total do carrinho
- */
 function calcularTotalCarrinho() {
 	$carrinho = obterCarrinhoComDetalhes();
 	$total = 0;
@@ -237,9 +216,6 @@ function calcularTotalCarrinho() {
 	return $total;
 }
 
-/**
- * Contar total de itens no carrinho
- */
 function contarItensCarrinho() {
 	$userId = getLoggedInUserId();
 	if ($userId) {
@@ -261,9 +237,6 @@ function contarItensCarrinho() {
 	return $total;
 }
 
-/**
- * Limpar carrinho
- */
 function limparCarrinho() {
 	$userId = getLoggedInUserId();
 	if ($userId) {
@@ -280,32 +253,61 @@ function limparCarrinho() {
 }
 
 /**
- * Validar e aplicar cupom
+ * FUNÇÃO CORRIGIDA: Validar cupom
+ * Usa os nomes corretos das colunas do banco de dados
  */
 function validarCupom($codigo_cupom) {
 	global $conn;
+	
 	if (empty($codigo_cupom)) {
 		return array('success' => false, 'message' => 'Código do cupom não informado');
 	}
+	
 	try {
-		$sql = "SELECT * FROM cupons WHERE codigo = ? AND status = 'Ativo'";
+		// CORRIGIDO: Usando os nomes corretos das colunas
+		$sql = "SELECT * FROM cupons WHERE codigo = ? AND ativo = 1";
 		$stmt = $conn->prepare($sql);
 		$stmt->bind_param("s", $codigo_cupom);
 		$stmt->execute();
 		$result = $stmt->get_result();
+		
 		if ($result->num_rows === 0) {
+			$stmt->close();
 			return array('success' => false, 'message' => 'Cupom não encontrado ou inativo');
 		}
+		
 		$cupom = $result->fetch_assoc();
+		$stmt->close();
+		
+		// Log para debug
+		error_log("Cupom encontrado: " . print_r($cupom, true));
+		
 		// Verificar se o cupom expirou
-		if ($cupom['data_expiracao'] && strtotime($cupom['data_expiracao']) < time()) {
+		if (!empty($cupom['data_expiracao']) && strtotime($cupom['data_expiracao']) < time()) {
 			return array('success' => false, 'message' => 'Cupom expirado');
 		}
-		// Verificar limite de uso
-		if ($cupom['uso_maximo'] && $cupom['usos_atuais'] >= $cupom['uso_maximo']) {
+		
+		// Verificar limite de uso (CORRIGIDO: usando limite_usos e usos_realizados)
+		$limite = intval($cupom['limite_usos'] ?? 0);
+		$usos = intval($cupom['usos_realizados'] ?? 0);
+		
+		if ($limite > 0 && $usos >= $limite) {
 			return array('success' => false, 'message' => 'Cupom esgotado');
 		}
+		
+		// Verificar valor mínimo do pedido
+		$minimo = floatval($cupom['minimo'] ?? 0);
+		$subtotal = calcularTotalCarrinho();
+		
+		if ($minimo > 0 && $subtotal < $minimo) {
+			return array(
+				'success' => false, 
+				'message' => 'Valor mínimo do pedido: R$ ' . number_format($minimo, 2, ',', '.')
+			);
+		}
+		
 		return array('success' => true, 'cupom' => $cupom);
+		
 	} catch (Exception $e) {
 		error_log("Erro ao validar cupom: " . $e->getMessage());
 		return array('success' => false, 'message' => 'Erro interno do servidor');
@@ -313,58 +315,89 @@ function validarCupom($codigo_cupom) {
 }
 
 /**
- * Calcular desconto do cupom (sobre subtotal)
+ * FUNÇÃO CORRIGIDA: Calcular desconto do cupom
  */
 function calcularDescontoCupom($cupom, $subtotal) {
-	if ($cupom['tipo'] === 'percentual') {
-		return ($subtotal * $cupom['valor']) / 100;
-	} elseif ($cupom['tipo'] === 'fixo') {
-		return min($cupom['valor'], $subtotal);
+	$tipo = $cupom['tipo_desconto'] ?? '';
+	$valor = floatval($cupom['valor_desconto'] ?? 0);
+	
+	// Log para debug
+	error_log("Calculando desconto - Tipo: {$tipo}, Valor: {$valor}, Subtotal: {$subtotal}");
+	
+	if ($tipo === 'percentual') {
+		$desconto = ($subtotal * $valor) / 100;
+		error_log("Desconto percentual calculado: {$desconto}");
+		return $desconto;
+	} elseif ($tipo === 'fixo') {
+		$desconto = min($valor, $subtotal);
+		error_log("Desconto fixo calculado: {$desconto}");
+		return $desconto;
 	}
+	
 	return 0;
 }
 
 /**
- * Aplicar cupom ao carrinho: retorna total incluindo frete (considerando frete grátis)
+ * FUNÇÃO CORRIGIDA: Aplicar cupom ao carrinho
  */
 function aplicarCupomAoCarrinho($codigo_cupom) {
+	// Valida o cupom
 	$validacao = validarCupom($codigo_cupom);
+	
 	if (!$validacao['success']) {
 		return $validacao;
 	}
+	
 	$cupom = $validacao['cupom'];
 	$subtotal = calcularTotalCarrinho();
 	$freteBase = 20.00;
-	// Detectar frete grátis: tipo 'frete' OU (tipo 'fixo' e valor 0.00)
-	$isFreeShipping = (isset($cupom['tipo']) && $cupom['tipo'] === 'frete') || (isset($cupom['tipo']) && $cupom['tipo'] === 'fixo' && (float)$cupom['valor'] == 0.0);
+	
+	// CORRIGIDO: Detectar frete grátis baseado no tipo_desconto
+	$tipo = $cupom['tipo_desconto'] ?? '';
+	$isFreeShipping = ($tipo === 'frete');
+	
+	// Calcular desconto (0 se for frete grátis)
 	$desconto = $isFreeShipping ? 0.0 : calcularDescontoCupom($cupom, $subtotal);
+	
+	// Aplicar frete (0 se for frete grátis)
 	$freteAplicado = $isFreeShipping ? 0.0 : $freteBase;
+	
+	// Calcular total final
 	$totalFinal = $subtotal + $freteAplicado - $desconto;
-
-	// Salvar cupom na sessão (só um por compra): substitui qualquer cupom anterior
-	if (isset($_SESSION['cupom_aplicado'])) {
-		unset($_SESSION['cupom_aplicado']);
-	}
+	
+	// Log para debug
+	error_log("Aplicando cupom - Subtotal: {$subtotal}, Frete: {$freteAplicado}, Desconto: {$desconto}, Total: {$totalFinal}");
+	
+	// Salvar cupom na sessão
 	$_SESSION['cupom_aplicado'] = array(
 		'codigo' => $cupom['codigo'],
-		'tipo' => $cupom['tipo'],
-		'valor' => $cupom['valor'],
+		'tipo' => $tipo,
+		'valor' => floatval($cupom['valor_desconto'] ?? 0),
 		'desconto' => $desconto,
 		'frete_gratis' => $isFreeShipping
 	);
-
+	
+	// Mensagem personalizada
+	$mensagem = 'Cupom aplicado com sucesso!';
+	if ($isFreeShipping) {
+		$mensagem .= ' Você ganhou frete grátis!';
+	} elseif ($tipo === 'percentual') {
+		$mensagem .= ' Desconto de ' . number_format($cupom['valor_desconto'], 0) . '% aplicado.';
+	} elseif ($tipo === 'fixo') {
+		$mensagem .= ' Desconto de R$ ' . number_format($desconto, 2, ',', '.') . ' aplicado.';
+	}
+	
 	return array(
 		'success' => true,
-		'message' => 'Cupom aplicado com sucesso!',
+		'message' => $mensagem,
+		'codigo_cupom' => $cupom['codigo'],
+		'tipo_cupom' => $tipo,
 		'desconto' => $desconto,
 		'free_shipping' => $isFreeShipping,
 		'total_final' => $totalFinal
 	);
 }
 
-/**
- * Gerar código único do pedido
- */
 function gerarCodigoPedido() {
 	global $conn;
 	try {
@@ -384,30 +417,35 @@ function gerarCodigoPedido() {
 }
 
 /**
- * Finalizar compra - criar pedido
+ * FUNÇÃO CORRIGIDA: Finalizar compra
  */
 function finalizarCompra($id_usuario = null) {
 	global $conn;
+	
 	if (!$id_usuario) {
 		return array('success' => false, 'message' => 'Usuário não identificado. Faça login.');
 	}
 
-	// Itens: usa DB para logado; fallback para sessão se necessário
 	$itens = getUserCartItemsFromDb($id_usuario);
 	if (empty($itens) && !empty($_SESSION['carrinho'])) {
 		foreach (obterCarrinhoComDetalhes() as $item) {
 			$itens[] = $item;
 		}
 	}
+	
 	if (empty($itens)) {
 		return array('success' => false, 'message' => 'Carrinho vazio');
 	}
 
 	try {
 		$conn->begin_transaction();
+		
 		$codigo_pedido = gerarCodigoPedido();
 		$total_produtos = 0.0;
-		foreach ($itens as $it) { $total_produtos += (float)$it['subtotal']; }
+		foreach ($itens as $it) { 
+			$total_produtos += (float)$it['subtotal']; 
+		}
+		
 		$freteBase = 20.00;
 		$isFreeShipping = isset($_SESSION['cupom_aplicado']['frete_gratis']) && $_SESSION['cupom_aplicado']['frete_gratis'] === true;
 		$frete = $isFreeShipping ? 0.0 : $freteBase;
@@ -426,22 +464,25 @@ function finalizarCompra($id_usuario = null) {
 			$produto_id = (int)$it['id_produto'];
 			$quantidade_item = (int)$it['quantidade_carrinho'];
 
-			// Bloqueio e validação de estoque
 			$sql_produto = "SELECT qtd_estoque, preco FROM produtos WHERE id_produto = ? FOR UPDATE";
 			$stmt_produto = $conn->prepare($sql_produto);
 			$stmt_produto->bind_param("i", $produto_id);
 			$stmt_produto->execute();
 			$res_p = $stmt_produto->get_result();
+			
 			if ($res_p->num_rows === 0) {
 				$stmt_produto->close();
 				throw new Exception('Produto não encontrado durante a finalização.');
 			}
+			
 			$pRow = $res_p->fetch_assoc();
 			$stmt_produto->close();
 			$estoque_disponivel = (int)$pRow['qtd_estoque'];
+			
 			if ($quantidade_item > $estoque_disponivel) {
 				throw new Exception('Estoque insuficiente para um dos itens do carrinho. Disponível: ' . $estoque_disponivel);
 			}
+			
 			$valor_total_item = (float)$pRow['preco'] * $quantidade_item;
 			$codigo_item = $codigo_pedido . '-' . $item_counter;
 
@@ -460,22 +501,25 @@ function finalizarCompra($id_usuario = null) {
 			$item_counter++;
 		}
 
+		// CORRIGIDO: Atualizar contador de usos do cupom
 		if (isset($_SESSION['cupom_aplicado']) && !empty($_SESSION['cupom_aplicado']['codigo'])) {
 			$codigo_cupom_aplicado = $_SESSION['cupom_aplicado']['codigo'];
-			$sql_update_cupom = "UPDATE cupons SET usos_atuais = usos_atuais + 1 WHERE codigo = ? AND status = 'Ativo' AND (uso_maximo IS NULL OR usos_atuais < uso_maximo)";
+			
+			// CORRIGIDO: Usando usos_realizados em vez de usos_atuais
+			$sql_update_cupom = "UPDATE cupons SET usos_realizados = usos_realizados + 1 WHERE codigo = ? AND ativo = 1 AND (limite_usos = 0 OR usos_realizados < limite_usos)";
 			$stmt_cupom = $conn->prepare($sql_update_cupom);
 			$stmt_cupom->bind_param("s", $codigo_cupom_aplicado);
 			$stmt_cupom->execute();
+			
 			if ($stmt_cupom->affected_rows === 0) {
-				$stmt_cupom->close();
-				throw new Exception('Cupom inválido ou limite de uso atingido durante a finalização.');
+				error_log("Aviso: Cupom não foi atualizado - pode ter atingido o limite");
 			}
+			
 			$stmt_cupom->close();
 		}
 
 		$conn->commit();
 
-		// Limpar carrinho (DB e sessão)
 		limparCarrinho();
 		unset($_SESSION['cupom_aplicado']);
 
@@ -485,6 +529,7 @@ function finalizarCompra($id_usuario = null) {
 			'codigo_pedido' => $codigo_pedido,
 			'id_pedido' => $id_pedido
 		);
+		
 	} catch (Exception $e) {
 		$conn->rollback();
 		error_log("Erro ao finalizar compra: " . $e->getMessage());

@@ -340,7 +340,7 @@ try {
 
                                     <div class="form-group">
     <label for="imagem">Imagem do Produto *</label>
-    <input type="file" id="imagem" name="imagem" accept="image/*" required>
+    <input type="file" id="imagem" name="imagem" accept="image/*">
 </div>
 
                         <button type="submit" class="submit-btn" id="submit-product-btn">Salvar Produto</button>
