@@ -1,7 +1,6 @@
 <?php
 require_once 'connection.php';
 
-// Verificar se foi fornecido um ID de produto
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: index.php");
     exit();
@@ -12,12 +11,10 @@ $produto = null;
 $erro = '';
 
 try {
-    // Verificar se a conexão foi estabelecida
     if ($conn->connect_error) {
         throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
     }
 
-    // Buscar dados do produto
     $sql = "SELECT * FROM produtos WHERE id_produto = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $produto_id);
@@ -31,18 +28,16 @@ try {
     }
 
     $stmt->close();
-
 } catch (Exception $e) {
     $erro = $e->getMessage();
     error_log("Erro em produto.php: " . $erro);
 } finally {
-    // Fechar conexão
+
     if (isset($conn)) {
         $conn->close();
     }
 }
 
-// Se não encontrou o produto, redirecionar
 if (!$produto) {
     header("Location: index.php?erro=" . urlencode($erro));
     exit();
@@ -67,12 +62,11 @@ if (!$produto) {
     </a>
     <div class="product-container">
         <div class="product-image-section">
-            <img 
-                src="<?php echo htmlspecialchars($produto['imagem'] ?? 'uploads/sem_imagem.png'); ?>" 
-                alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>" 
+            <img
+                src="<?php echo htmlspecialchars($produto['imagem'] ?? 'uploads/sem_imagem.png'); ?>"
+                alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>"
                 class="product-image"
-                onerror="this.src='uploads/sem_imagem.png';"
-            >
+                onerror="this.src='uploads/sem_imagem.png';">
         </div>
 
         <div class="product-details-section">
@@ -87,7 +81,7 @@ if (!$produto) {
                 </p>
 
                 <div class="product-info">
-                    <p><strong>Estoque Disponível:</strong> 
+                    <p><strong>Estoque Disponível:</strong>
                         <?php if ($produto['qtd_estoque'] > 0): ?>
                             <span class="stock-available"><?php echo $produto['qtd_estoque']; ?> unidades</span>
                         <?php else: ?>
@@ -113,31 +107,31 @@ if (!$produto) {
     <script>
         function adicionarAoCarrinho(produtoId) {
             const quantidade = document.getElementById('quantity').value;
-            
+
             fetch('carrinho_action.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `acao=adicionar&produto_id=${produtoId}&quantidade=${quantidade}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    // Atualizar contador do carrinho se existir
-                    if (typeof atualizarContadorCarrinho === 'function') {
-                        atualizarContadorCarrinho();
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `acao=adicionar&produto_id=${produtoId}&quantidade=${quantidade}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        if (typeof atualizarContadorCarrinho === 'function') {
+                            atualizarContadorCarrinho();
+                        }
+                    } else {
+                        alert('Erro: ' + data.message);
                     }
-                } else {
-                    alert('Erro: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao adicionar ao carrinho');
-            });
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao adicionar ao carrinho');
+                });
         }
     </script>
 </body>
+
 </html>

@@ -2,19 +2,18 @@
 <?php
 require_once 'connection.php';
 
-// Array para armazenar mensagens
+
 $erro = '';
 $sucesso = '';
 
-// Processar formulário de edição de produto
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id']) && isset($_POST['nome'])) {
     try {
-        // Verificar se a conexão foi estabelecida
+
         if ($conn->connect_error) {
             throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
         }
 
-        // Validar dados obrigatórios
         $id = intval($_POST['id']);
         $nome = trim($_POST['nome']);
         $sku = trim($_POST['sku']);
@@ -27,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id']) && isset($_POST[
             throw new Exception("Todos os campos obrigatórios devem ser preenchidos corretamente.");
         }
 
-        // Verificar se o produto existe
         $check_sql = "SELECT id_produto FROM produtos WHERE id_produto = ?";
         $check_stmt = $conn->prepare($check_sql);
         $check_stmt->bind_param("i", $id);
@@ -52,11 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id']) && isset($_POST[
         // Atualizar produto no banco de dados
         $update_sql = "UPDATE produtos SET cod_produto = ?, nome_produto = ?, descricao_produto = ?, preco = ?, qtd_estoque = ?, categoria = ? WHERE id_produto = ?";
         $update_stmt = $conn->prepare($update_sql);
-        
+
         if (!$update_stmt) {
             throw new Exception("Erro ao preparar statement: " . $conn->error);
         }
-        
+
         $update_stmt->bind_param("sssdisi", $sku, $nome, $descricao, $preco, $estoque, $categoria, $id);
 
         if ($update_stmt->execute()) {
@@ -72,19 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id']) && isset($_POST[
         $update_stmt->close();
         $check_stmt->close();
         $check_sku_stmt->close();
-
     } catch (Exception $e) {
         $erro = $e->getMessage();
         error_log("Erro ao editar produto: " . $erro);
     }
 }
 
-// Fechar conexão
 if (isset($conn)) {
     $conn->close();
 }
 
-// Redirecionar de volta para produtos.php com mensagens
 $redirect_url = "produtos.php";
 if (!empty($erro)) {
     $redirect_url .= "?erro=" . urlencode($erro);

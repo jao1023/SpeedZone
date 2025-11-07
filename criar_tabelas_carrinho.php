@@ -2,9 +2,7 @@
 <?php
 require_once 'connection.php';
 
-// Queries SQL para criar as tabelas do carrinho
 $queries = [
-    // Tabela para carrinhos de compras
     "CREATE TABLE IF NOT EXISTS carrinho (
         id_carrinho INT PRIMARY KEY AUTO_INCREMENT,
         id_usuario INT,
@@ -16,8 +14,8 @@ $queries = [
         UPDATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
     )",
-    
-    // Tabela para itens do carrinho
+
+
     "CREATE TABLE IF NOT EXISTS carrinho_itens (
         id_item INT PRIMARY KEY AUTO_INCREMENT,
         id_carrinho INT,
@@ -31,8 +29,7 @@ $queries = [
         FOREIGN KEY (id_produto) REFERENCES produtos(id_produto) ON DELETE CASCADE,
         UNIQUE KEY unique_carrinho_produto (id_carrinho, id_produto)
     )",
-    
-    // Tabela para pedidos (quando o carrinho é finalizado)
+
     "CREATE TABLE IF NOT EXISTS pedidos_finalizados (
         id_pedido INT PRIMARY KEY AUTO_INCREMENT,
         id_carrinho INT,
@@ -52,31 +49,28 @@ $queries = [
 echo "<h2>Criando Tabelas do Carrinho</h2>";
 
 try {
-    // Verificar se a conexão foi estabelecida
     if ($conn->connect_error) {
         throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
     }
 
     foreach ($queries as $index => $query) {
         if ($conn->query($query) === TRUE) {
-            $tabela = match($index) {
+            $tabela = match ($index) {
                 0 => "carrinho",
-                1 => "carrinho_itens", 
+                1 => "carrinho_itens",
                 2 => "pedidos_finalizados"
             };
-            echo "✅ Tabela '{$tabela}' criada com sucesso!<br>";
+            echo " Tabela '{$tabela}' criada com sucesso!<br>";
         } else {
-            echo "❌ Erro ao criar tabela: " . $conn->error . "<br>";
+            echo " Erro ao criar tabela: " . $conn->error . "<br>";
         }
     }
 
     echo "<br><strong>Todas as tabelas do carrinho foram criadas com sucesso!</strong><br>";
     echo "<a href='index.php'>Voltar para o site</a>";
-
 } catch (Exception $e) {
-    echo "❌ Erro: " . $e->getMessage();
+    echo " Erro: " . $e->getMessage();
 } finally {
-    // Fechar conexão
     if (isset($conn)) {
         $conn->close();
     }

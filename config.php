@@ -1,6 +1,5 @@
 <?php require_once __DIR__ . '/session.php'; ?>
 <?php
-// Arquivo: config.php
 
 // Redireciona se o usuário não estiver logado
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {

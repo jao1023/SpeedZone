@@ -3,7 +3,7 @@
 
 $user_cargo = $_SESSION['cargo'] ?? 'Cliente';
 if (!in_array($user_cargo, ['Funcionario', 'Administrador'])) {
-    // Redireciona para a página principal se não tiver permissão
+
     header("Location: index.php?error=access_denied");
     exit;
 }
@@ -11,13 +11,13 @@ if (!in_array($user_cargo, ['Funcionario', 'Administrador'])) {
 
 require_once 'connection.php';
 
-// Array para armazenar os produtos
+
 $produtos = array();
 $erro = '';
 $sucesso = '';
 $termo_busca = '';
 
-// Capturar mensagens da URL (vindas do novo_produto.php)
+
 if (isset($_GET['erro'])) {
     $erro = $_GET['erro'];
 }
@@ -25,18 +25,17 @@ if (isset($_GET['sucesso'])) {
     $sucesso = $_GET['sucesso'];
 }
 
-// Capturar termo de busca
+
 if (isset($_GET['busca'])) {
     $termo_busca = trim($_GET['busca']);
 }
 
 try {
-    // Verificar se a conexão foi estabelecida
+
     if ($conn->connect_error) {
         throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
     }
 
-    // Consulta para buscar produtos (com ou sem filtro de busca)
     if (!empty($termo_busca)) {
         $sql = "SELECT * FROM produtos WHERE nome_produto LIKE ? OR cod_produto LIKE ? ORDER BY id_produto ASC";
         $stmt = $conn->prepare($sql);
@@ -49,23 +48,20 @@ try {
         $result = $conn->query($sql);
     }
 
-    // Verificar se a consulta foi executada com sucesso
     if ($result === false) {
         throw new Exception("Erro na consulta SQL: " . $conn->error);
     }
 
-    // Processar resultados
     if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $produtos[] = $row;
         }
     }
-
 } catch (Exception $e) {
     $erro = $e->getMessage();
     error_log("Erro em produtos.php: " . $erro);
 } finally {
-    // Fechar conexão
+
     if (isset($conn)) {
         $conn->close();
     }
@@ -128,8 +124,8 @@ try {
                     <button class="add-btn" id="show-create-form"><i class="fas fa-plus"></i> Adicionar Novo
                         Produto</button>
                     <form method="GET" class="search-form">
-                        <input type="text" name="busca" placeholder="Buscar produto por nome ou código..." 
-                               class="search-input" value="<?php echo htmlspecialchars($termo_busca); ?>">
+                        <input type="text" name="busca" placeholder="Buscar produto por nome ou código..."
+                            class="search-input" value="<?php echo htmlspecialchars($termo_busca); ?>">
                         <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
                         <?php if (!empty($termo_busca)): ?>
                             <a href="produtos.php" class="clear-search-btn" title="Limpar busca">
@@ -338,10 +334,10 @@ try {
                             </div>
                         </fieldset>
 
-                                    <div class="form-group">
-    <label for="imagem">Imagem do Produto *</label>
-    <input type="file" id="imagem" name="imagem" accept="image/*">
-</div>
+                        <div class="form-group">
+                            <label for="imagem">Imagem do Produto *</label>
+                            <input type="file" id="imagem" name="imagem" accept="image/*">
+                        </div>
 
                         <button type="submit" class="submit-btn" id="submit-product-btn">Salvar Produto</button>
                     </form>

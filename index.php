@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Redireciona se o usuário não estiver logado
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
     header("Location: login.php");
     exit;
@@ -9,26 +8,20 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
 
 require_once 'connection.php';
 
-// Array para armazenar os produtos
 $produtos = array();
 $termo_busca = '';
 
-// Capturar termo de busca
 if (isset($_GET['busca'])) {
     $termo_busca = trim($_GET['busca']);
 }
 
-// Verificar o cargo do usuário logado
 $user_cargo = $_SESSION['cargo'] ?? 'Cliente';
 $pode_gerenciar = in_array($user_cargo, ['Funcionario', 'Administrador']);
 
 try {
-    // Verificar se a conexão foi estabelecida
     if ($conn->connect_error) {
         throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
     }
-
-    // Consulta para buscar produtos (com ou sem filtro de busca)
     if (!empty($termo_busca)) {
         $sql = "SELECT * FROM produtos WHERE nome_produto LIKE ? OR cod_produto LIKE ? ORDER BY id_produto ASC LIMIT 12";
         $stmt = $conn->prepare($sql);
@@ -41,21 +34,17 @@ try {
         $result = $conn->query($sql);
     }
 
-    // Verificar se a consulta foi executada com sucesso
     if ($result === false) {
         throw new Exception("Erro na consulta SQL: " . $conn->error);
     }
 
-    // Processar resultados
     if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $produtos[] = $row;
         }
     }
-
 } catch (Exception $e) {
     error_log("Erro em index.php: " . $e->getMessage());
-    // Em caso de erro, manter array vazio
 } finally {
     if (isset($conn)) {
         $conn->close();
@@ -65,6 +54,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,6 +66,7 @@ try {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
+
 <body>
     <header class="navbar">
         <div class="logo">
@@ -137,13 +128,12 @@ try {
                 <?php if (!empty($produtos)): ?>
                     <?php foreach ($produtos as $produto): ?>
                         <div class="product-card">
-                            <img 
-                                src="<?php echo htmlspecialchars($produto['imagem'] ?? 'uploads/sem_imagem.png'); ?>" 
-                                alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>" 
+                            <img
+                                src="<?php echo htmlspecialchars($produto['imagem'] ?? 'uploads/sem_imagem.png'); ?>"
+                                alt="<?php echo htmlspecialchars($produto['nome_produto']); ?>"
                                 class="product-img"
                                 style="width:200px; height:200px; object-fit:contain;"
-                                onerror="this.src='uploads/sem_imagem.png';"
-                            >
+                                onerror="this.src='uploads/sem_imagem.png';">
                             <h3 class="product-name"><?php echo htmlspecialchars($produto['nome_produto']); ?></h3>
                             <p class="product-description"><?php echo htmlspecialchars($produto['descricao_produto']); ?></p>
                             <div class="product-price">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></div>
@@ -174,4 +164,5 @@ try {
 
     <script src="carrossel.js"></script>
 </body>
+
 </html>

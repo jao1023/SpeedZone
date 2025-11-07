@@ -1,4 +1,4 @@
-/* Estilos para a página de termos de uso */
+
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #f0f2f5;
@@ -60,7 +60,7 @@ body {
     margin-top: 40px;
 }
 
-/* Responsividade */
+
 @media (max-width: 768px) {
     .terms-container {
         padding: 25px;
@@ -74,7 +74,7 @@ body {
         font-size: 1.3rem;
     }
 }
-/* Botão de Voltar */
+
 .back-btn {
     position: absolute;
     top: 25px;

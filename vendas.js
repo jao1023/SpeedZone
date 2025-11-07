@@ -1,28 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // Elementos do Modal
+
     const modal = document.getElementById('order-details-modal');
     const closeBtn = document.querySelector('.modal .close-btn');
     const viewDetailsBtns = document.querySelectorAll('.view-details-btn');
     const itemsList = document.getElementById('items-list');
-    
-    // Elementos da busca
+
     const searchInput = document.querySelector('.search-input');
     const clearSearchBtn = document.querySelector('.clear-search-btn');
     const tableRows = document.querySelectorAll('.table-row');
 
-    // Variável para armazenar o código do pedido atual
     let currentOrderCode = null;
 
-    // Função para preencher e mostrar o modal
     function showOrderDetails(codigoPedido) {
         currentOrderCode = codigoPedido;
-        
-        // Mostrar loading
+
         modal.style.display = 'block';
         document.getElementById('modal-title').textContent = 'Carregando...';
-        
-        // Buscar dados do pedido via AJAX
+
         fetch(`get_pedido_details.php?codigo_pedido=${encodeURIComponent(codigoPedido)}`)
             .then(response => response.json())
             .then(data => {
@@ -33,14 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 const order = data.pedido;
-                
-                // 1. Preenche Títulos e Informações Principais
+
                 document.getElementById('modal-title').textContent = `Detalhes do Pedido ${order.id}`;
                 document.getElementById('client-name').textContent = order.cliente;
                 document.getElementById('client-email').textContent = order.email;
                 document.getElementById('delivery-address').textContent = order.endereco;
-                
-                // 2. Preenche Status com SELECT
+
                 const statusDetailElement = document.getElementById('order-status-detail');
                 statusDetailElement.innerHTML = `
                     <select id="status-select" class="status-select">
@@ -50,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </select>
                 `;
 
-                // 3. Preenche Itens Adquiridos
                 itemsList.innerHTML = '';
                 order.itens.forEach(item => {
                     const row = document.createElement('tr');
@@ -63,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     itemsList.appendChild(row);
                 });
 
-                // 4. Preenche Resumo Financeiro
                 document.getElementById('subtotal').textContent = order.subtotal;
                 document.getElementById('shipping-cost').textContent = order.frete;
                 document.getElementById('total-amount').textContent = order.total;
@@ -75,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // Event Listeners para abrir o modal
     viewDetailsBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const codigoPedido = e.currentTarget.getAttribute('data-id');
@@ -83,19 +72,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Event Listeners para fechar o modal
     if (closeBtn) closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
     });
 
-    // Fecha o modal ao clicar fora
     window.addEventListener('click', (event) => {
         if (event.target == modal) {
             modal.style.display = 'none';
         }
     });
 
-    // Função de busca
     function filterOrders(searchTerm) {
         const term = searchTerm.toLowerCase().trim();
         let visibleCount = 0;
@@ -104,8 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const orderId = row.querySelector('[data-label="ID:"]')?.textContent.toLowerCase() || '';
             const clientName = row.querySelector('[data-label="Cliente:"]')?.textContent.toLowerCase() || '';
             const orderDataId = row.getAttribute('data-order-id')?.toLowerCase() || '';
-            
-            // Busca por código do pedido (com ou sem #) ou nome do cliente
+
             const matches = orderId.includes(term) || 
                            clientName.includes(term) || 
                            orderDataId.includes(term);
@@ -117,8 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 row.style.display = 'none';
             }
         });
-        
-        // Mostrar mensagem se não houver resultados
+
         const noDataElement = document.querySelector('.no-data');
         if (visibleCount === 0 && term !== '') {
             if (!noDataElement) {
@@ -132,42 +116,36 @@ document.addEventListener('DOMContentLoaded', () => {
             noDataElement.remove();
         }
     }
-    
-    // Função para limpar busca
+
     function clearSearch() {
         searchInput.value = '';
         filterOrders('');
         clearSearchBtn.style.display = 'none';
     }
-    
-    // Event listener para busca em tempo real
+
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const value = e.target.value;
             filterOrders(value);
-            
-            // Mostrar/ocultar botão de limpar
+
             if (value.trim() !== '') {
                 clearSearchBtn.style.display = 'block';
             } else {
                 clearSearchBtn.style.display = 'none';
             }
         });
-        
-        // Limpar busca ao pressionar Escape
+
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 clearSearch();
             }
         });
     }
-    
-    // Event listener para botão de limpar
+
     if (clearSearchBtn) {
         clearSearchBtn.addEventListener('click', clearSearch);
     }
 
-    // ATUALIZAR STATUS DO PEDIDO
     document.querySelector('.update-status-btn').addEventListener('click', () => {
         const statusSelect = document.getElementById('status-select');
         
@@ -185,17 +163,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('Tentando atualizar:', currentOrderCode, 'para', newStatus);
 
-        // Confirmar mudança
+
         if (!confirm(`Deseja realmente alterar o status para "${newStatus}"?`)) {
             return;
         }
 
-        // Desabilitar botão durante o processo
         const updateBtn = document.querySelector('.update-status-btn');
         updateBtn.disabled = true;
         updateBtn.textContent = 'Salvando...';
 
-        // Enviar requisição para atualizar status
         fetch('update_status.php', {
             method: 'POST',
             headers: {
@@ -215,14 +191,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.success) {
                 alert('Status atualizado com sucesso!');
-                
-                // Atualizar a tabela principal sem recarregar a página
+
                 const row = document.querySelector(`[data-order-id="${currentOrderCode}"]`);
                 if (row) {
                     const statusCell = row.querySelector('.status');
                     statusCell.textContent = newStatus;
-                    
-                    // Atualizar classe CSS do status
+
                     statusCell.className = 'cell-data status';
                     if (newStatus === 'Entregue') {
                         statusCell.classList.add('delivered');
@@ -230,8 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         statusCell.classList.add('processing');
                     }
                 }
-                
-                // Fechar modal
+
                 modal.style.display = 'none';
             } else {
                 alert('Erro ao atualizar status: ' + data.message);
@@ -242,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Erro ao atualizar status do pedido: ' + error.message);
         })
         .finally(() => {
-            // Reabilitar botão
             updateBtn.disabled = false;
             updateBtn.textContent = 'Atualizar Status';
         });

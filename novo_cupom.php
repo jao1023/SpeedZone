@@ -1,31 +1,29 @@
 <?php require_once __DIR__ . '/session.php'; ?>
 <?php
-// Arquivo PHP: novo_cupom.php - Formulário para Novo Cupom
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - Criar Novo Cupom</title>
-    
-    <link rel="stylesheet" href="admin.css"> 
+
+    <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
-        /* INÍCIO: ESTILIZAÇÃO VERDE DOS BOTÕES */
         .form-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 20px; /* Mantendo apenas o posicionamento básico para os botões */
+            margin-top: 20px;
         }
 
         .btn-submit,
         .btn-cancel {
-            /* Propriedades comuns */
             color: white;
             padding: 10px 20px;
             border: none;
@@ -33,29 +31,29 @@
             cursor: pointer;
             font-size: 1em;
             font-weight: 600;
-            text-decoration: none; /* Para o link de Cancelar */
+            text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background-color 0.2s ease;
         }
 
-        /* Estilo para o botão principal (Salvar) */
+
         .btn-submit {
-            background-color: #28a745; /* Verde padrão (Success) */
-        }
-        .btn-submit:hover {
-            background-color: #1e7e34; /* Verde mais escuro no hover */
+            background-color: #28a745;
         }
 
-        /* Estilo para o botão Cancelar (também verde, mas com um tom ligeiramente diferente ou mais suave) */
-        .btn-cancel {
-            background-color: #4CAF50; /* Outro tom de verde */
+        .btn-submit:hover {
+            background-color: #1e7e34;
         }
+
+        .btn-cancel {
+            background-color: #4CAF50;
+        }
+
         .btn-cancel:hover {
             background-color: #45a049;
         }
-        /* FIM: ESTILIZAÇÃO VERDE DOS BOTÕES */
     </style>
 </head>
 
@@ -67,17 +65,17 @@
                 <i class="fas fa-tags"></i>
                 <h2>Painel Admin</h2>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <a href="admin.php" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
                 <a href="produtos.php" class="nav-item"><i class="fas fa-box-open"></i> Produtos</a>
                 <a href="vendas.php" class="nav-item"><i class="fas fa-chart-line"></i> Vendas</a>
                 <a href="usuarios.php" class="nav-item"><i class="fas fa-users"></i> Usuários</a>
                 <a href="suporteAdmin.php" class="nav-item"><i class="fas fa-headset"></i> Suporte</a>
-                
+
                 <a href="cupons.php" class="nav-item active"><i class="fas fa-tags"></i> Cupons</a>
             </nav>
-            
+
             <div class="logout-section">
                 <a href="index.php"><i class="fas fa-sign-out-alt"></i> Sair</a>
             </div>
@@ -88,7 +86,7 @@
 
             <div class="form-container">
                 <form action="cupons.php" method="POST" id="form-novo-cupom">
-                    
+
                     <div class="form-group">
                         <label for="codigo">Código do Cupom</label>
                         <input type="text" id="codigo" name="codigo" placeholder="Ex: DESCONTO20" required maxlength="20" style="text-transform: uppercase;">
@@ -113,7 +111,7 @@
                             </div>
                             <small id="valor_help_text" style="color: #777;">(Valor do desconto em Reais)</small>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="minimo_visual">Valor Mínimo do Pedido (R$)</label>
                             <div class="input-group">
@@ -123,13 +121,13 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="flex-row">
                         <div class="form-group">
                             <label for="data_expiracao">Data de Expiração</label>
                             <input type="date" id="data_expiracao" name="data_expiracao" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="limite_usos">Limite de Usos (0 para ilimitado)</label>
                             <input type="number" id="limite_usos" name="limite_usos" value="0" min="0">
@@ -149,166 +147,146 @@
     </div>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('form-novo-cupom');
-    const tipoDesconto = document.getElementById('tipo_desconto');
-    
-    const valorDescontoVisual = document.getElementById('valor_desconto_visual');
-    const valorDescontoReal = document.getElementById('valor_desconto');
-    const valorPrefix = document.getElementById('valor_prefix');
-    const valorSuffix = document.getElementById('valor_suffix');
-    const valorHelpText = document.getElementById('valor_help_text');
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('form-novo-cupom');
+            const tipoDesconto = document.getElementById('tipo_desconto');
 
-    const minimoVisual = document.getElementById('minimo_visual');
-    const minimoReal = document.getElementById('minimo');
-    
-    // =======================================================
-    // 1. FUNÇÃO DE FORMATAÇÃO DE MOEDA (CORRIGIDA)
-    // =======================================================
-    function formatarMoeda(inputElement, realElement) {
-        let v = inputElement.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-        
-        if (v.length > 0) {
-            // Preenche com zeros à esquerda se for menos de 3 dígitos
-            while (v.length < 3) {
-                v = '0' + v;
+            const valorDescontoVisual = document.getElementById('valor_desconto_visual');
+            const valorDescontoReal = document.getElementById('valor_desconto');
+            const valorPrefix = document.getElementById('valor_prefix');
+            const valorSuffix = document.getElementById('valor_suffix');
+            const valorHelpText = document.getElementById('valor_help_text');
+
+            const minimoVisual = document.getElementById('minimo_visual');
+            const minimoReal = document.getElementById('minimo');
+
+
+            function formatarMoeda(inputElement, realElement) {
+                let v = inputElement.value.replace(/\D/g, '');
+                if (v.length > 0) {
+                    // Preenche com zeros à esquerda se for menos de 3 dígitos
+                    while (v.length < 3) {
+                        v = '0' + v;
+                    }
+
+                    // Separa centavos (últimos 2 dígitos)
+                    let inteiros = v.slice(0, -2);
+                    let decimais = v.slice(-2);
+
+                    // Remove zeros à esquerda (exceto se for só zeros)
+                    inteiros = inteiros.replace(/^0+/, '') || '0';
+
+                    // Adiciona separador de milhar (ponto)
+                    inteiros = inteiros.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+                    // Constrói a string formatada para visualização
+                    let formattedValue = inteiros + ',' + decimais;
+                    inputElement.value = formattedValue;
+
+                    let valorLimpo = v.slice(0, -2) + '.' + decimais;
+
+                    valorLimpo = valorLimpo.replace(/^0+/, '0');
+                    realElement.value = valorLimpo;
+
+                } else {
+                    inputElement.value = '';
+                    realElement.value = '';
+                }
             }
-            
-            // Separa centavos (últimos 2 dígitos)
-            let inteiros = v.slice(0, -2);
-            let decimais = v.slice(-2);
-            
-            // Remove zeros à esquerda (exceto se for só zeros)
-            inteiros = inteiros.replace(/^0+/, '') || '0';
-            
-            // Adiciona separador de milhar (ponto)
-            inteiros = inteiros.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            
-            // Constrói a string formatada para visualização
-            let formattedValue = inteiros + ',' + decimais;
-            inputElement.value = formattedValue;
 
-            // CORREÇÃO CRÍTICA: Valor real SEM pontos de milhar, COM ponto decimal
-            let valorLimpo = v.slice(0, -2) + '.' + decimais;
-            // Remove zeros à esquerda do valor limpo
-            valorLimpo = valorLimpo.replace(/^0+/, '0');
-            realElement.value = valorLimpo;
+            function updateTipoDesconto() {
+                const tipo = tipoDesconto.value;
 
-        } else {
-            inputElement.value = '';
-            realElement.value = '';
-        }
-    }
+                valorDescontoVisual.disabled = false;
+                valorDescontoVisual.required = false;
+                valorDescontoVisual.style.display = 'block';
 
-    // =======================================================
-    // 2. FUNÇÃO DE CONTROLE DE TIPO DE DESCONTO
-    // =======================================================
-    function updateTipoDesconto() {
-        const tipo = tipoDesconto.value;
+                const prefixSpan = document.getElementById('valor_prefix');
+                const suffixSpan = document.getElementById('valor_suffix');
+                prefixSpan.style.display = 'none';
+                suffixSpan.style.display = 'none';
 
-        // Reset dos Campos
-        valorDescontoVisual.disabled = false;
-        valorDescontoVisual.required = false;
-        valorDescontoVisual.style.display = 'block';
-        
-        const prefixSpan = document.getElementById('valor_prefix');
-        const suffixSpan = document.getElementById('valor_suffix');
-        prefixSpan.style.display = 'none';
-        suffixSpan.style.display = 'none';
-        
-        valorDescontoVisual.placeholder = '';
-        
-        // Aplica Regras
-        if (tipo === 'percentual') {
-            valorDescontoVisual.placeholder = 'Ex: 20';
-            suffixSpan.style.display = 'inline';
-            valorHelpText.textContent = '(Valor do desconto em percentual, máximo 100)';
-            valorDescontoVisual.required = true;
-            
-            // Limpa formatação de moeda se houver
-            let valorAtual = valorDescontoReal.value;
-            if (valorAtual) {
-                valorDescontoVisual.value = valorAtual.replace('.', ',');
+                valorDescontoVisual.placeholder = '';
+
+                if (tipo === 'percentual') {
+                    valorDescontoVisual.placeholder = 'Ex: 20';
+                    suffixSpan.style.display = 'inline';
+                    valorHelpText.textContent = '(Valor do desconto em percentual, máximo 100)';
+                    valorDescontoVisual.required = true;
+
+
+                    let valorAtual = valorDescontoReal.value;
+                    if (valorAtual) {
+                        valorDescontoVisual.value = valorAtual.replace('.', ',');
+                    }
+
+                } else if (tipo === 'frete') {
+                    valorDescontoVisual.value = '0,00';
+                    valorDescontoReal.value = '0.00';
+                    valorDescontoVisual.disabled = true;
+                    valorDescontoVisual.required = false;
+                    prefixSpan.style.display = 'inline';
+                    valorHelpText.textContent = '(Frete Grátis - valor fixo R$ 0,00)';
+                }
             }
-            
-        }  else if (tipo === 'frete') {
-            valorDescontoVisual.value = '0,00';
-            valorDescontoReal.value = '0.00';
-            valorDescontoVisual.disabled = true;
-            valorDescontoVisual.required = false;
-            prefixSpan.style.display = 'inline';
-            valorHelpText.textContent = '(Frete Grátis - valor fixo R$ 0,00)';
-        }
-    }
 
-    // =======================================================
-    // 3. LISTENERS
-    // =======================================================
-    
-    // A. Valor do Desconto
-    valorDescontoVisual.addEventListener('input', function() {
-        if (tipoDesconto.value === 'fixo') {
-            formatarMoeda(this, valorDescontoReal);
-        } else if (tipoDesconto.value === 'percentual') {
-            // Para percentual, mantém apenas números e vírgula/ponto
-            let v = this.value.replace(/[^\d.,]/g, '');
-            v = v.replace(',', '.'); // Converte vírgula para ponto
-            
-            // Limita a 100
-            let num = parseFloat(v);
-            if (num > 100) {
-                v = '100';
+
+            valorDescontoVisual.addEventListener('input', function() {
+                if (tipoDesconto.value === 'fixo') {
+                    formatarMoeda(this, valorDescontoReal);
+                } else if (tipoDesconto.value === 'percentual') {
+
+                    let v = this.value.replace(/[^\d.,]/g, '');
+                    v = v.replace(',', '.');
+
+                    let num = parseFloat(v);
+                    if (num > 100) {
+                        v = '100';
+                    }
+
+                    this.value = v.replace('.', ',');
+                    valorDescontoReal.value = v.replace(',', '.');
+                }
+            });
+
+            minimoVisual.addEventListener('input', function() {
+                formatarMoeda(this, minimoReal);
+            });
+
+            tipoDesconto.addEventListener('change', updateTipoDesconto);
+
+            document.getElementById('codigo').addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+
+            form.addEventListener('submit', function(e) {
+                if (tipoDesconto.value === 'percentual') {
+                    let valor = parseFloat(valorDescontoReal.value);
+                    if (valor > 100 || valor <= 0) {
+                        e.preventDefault();
+                        alert('O desconto percentual deve ser entre 0.01 e 100');
+                        return false;
+                    }
+                }
+
+
+
+                console.log('Enviando valores:', {
+                    tipo: tipoDesconto.value,
+                    valorVisual: valorDescontoVisual.value,
+                    valorReal: valorDescontoReal.value,
+                    minimoVisual: minimoVisual.value,
+                    minimoReal: minimoReal.value
+                });
+            });
+
+            updateTipoDesconto();
+
+            if (minimoVisual.value) {
+                formatarMoeda(minimoVisual, minimoReal);
             }
-            
-            this.value = v.replace('.', ','); // Mostra com vírgula
-            valorDescontoReal.value = v.replace(',', '.'); // Envia com ponto
-        }
-    });
-    
-    // B. Valor Mínimo da Compra
-    minimoVisual.addEventListener('input', function() {
-        formatarMoeda(this, minimoReal);
-    });
-    
-    // C. Mudança no Tipo de Desconto
-    tipoDesconto.addEventListener('change', updateTipoDesconto);
-    
-    // D. Código do cupom em caixa alta
-    document.getElementById('codigo').addEventListener('input', function() {
-        this.value = this.value.toUpperCase();
-    });
-
-    // E. Submit do Formulário
-    form.addEventListener('submit', function(e) {
-        // Validação adicional para percentual
-        if (tipoDesconto.value === 'percentual') {
-            let valor = parseFloat(valorDescontoReal.value);
-            if (valor > 100 || valor <= 0) {
-                e.preventDefault();
-                alert('O desconto percentual deve ser entre 0.01 e 100');
-                return false;
-            }
-        }
-        
-
-        
-        console.log('Enviando valores:', {
-            tipo: tipoDesconto.value,
-            valorVisual: valorDescontoVisual.value,
-            valorReal: valorDescontoReal.value,
-            minimoVisual: minimoVisual.value,
-            minimoReal: minimoReal.value
         });
-    });
-
-    // Inicializa o estado visual
-    updateTipoDesconto();
-    
-    // Formata campos monetários iniciais
-    if (minimoVisual.value) {
-        formatarMoeda(minimoVisual, minimoReal);
-    }
-});
     </script>
 </body>
+
 </html>

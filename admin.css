@@ -1,6 +1,3 @@
-/* Paleta de Cores: #1a731d (Verde Principal), #135c16 (Verde Hover), #f0f2f5 (Fundo Claro) */
-
-/* Geral */
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #f0f2f5;
@@ -14,7 +11,6 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar de Navegação */
 .sidebar {
     width: 250px;
     background-color: #1a731d;
@@ -84,7 +80,6 @@ body {
     background-color: #135c16;
 }
 
-/* Área Principal de Conteúdo */
 .main-content {
     flex-grow: 1;
     padding: 30px;
@@ -99,9 +94,8 @@ body {
     padding-bottom: 10px;
 }
 
-/* Seções de Gerenciamento (abas) */
 .management-section, .dashboard-section {
-    display: none; /* O JS controla qual seção está ativa */
+    display: none; 
     margin-bottom: 40px;
 }
 
@@ -116,7 +110,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* Dashboard Stats */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -150,7 +143,6 @@ body {
     margin: 5px 0 0;
 }
 
-/* Ações e Busca */
 .action-bar {
     display: flex;
     justify-content: space-between;
@@ -187,7 +179,6 @@ body {
     width: 300px;
 }
 
-/* Tabelas (Data Grid) */
 .data-table {
     background-color: #fff;
     border-radius: 10px;
@@ -195,17 +186,16 @@ body {
     overflow: hidden;
 }
 
-/* Templates de Grid para as Tabelas */
 .product-grid-template {
-    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.8fr 1fr; /* 6 colunas para produtos */
+    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.8fr 1fr;
 }
 
 .sales-grid-template {
-    grid-template-columns: 1fr 1fr 1.5fr 1fr 1.2fr 0.8fr; /* 6 colunas para vendas */
+    grid-template-columns: 1fr 1fr 1.5fr 1fr 1.2fr 0.8fr; 
 }
 
 .users-grid-template {
-    grid-template-columns: 0.5fr 1.5fr 2fr 1.2fr 1fr 0.8fr; /* 6 colunas para usuários */
+    grid-template-columns: 0.5fr 1.5fr 2fr 1.2fr 1fr 0.8fr;
 }
 
 .table-header {
@@ -232,60 +222,43 @@ body {
     color: #444;
 }
 
-/* Status e Ações */
 .status {
     padding: 5px 10px;
-    border-radius: 20px; /* Isso garante o arredondamento */
+    border-radius: 20px; 
     font-size: 0.85rem;
     text-align: center;
-    /* Adicionado para garantir o alinhamento dentro do grid row */
     justify-self: start; 
     min-width: 100px;
 }
 
-/* Cores de status de estoque/atividade/vendas */
-
-/* Ativo / Entregue */
 .status.active, .status.delivered {
     color: #1a731d;
     font-weight: 600;
     background-color: #e6f9e6; 
 }
 
-/* Em Processamento / Estoque Médio */
 .cell-data.orange, .status.processing {
     color: #ff9800;
     font-weight: 600;
     background-color: #fff3e0;
 }
 
-/* Cancelado / Bloqueado / Estoque Baixo */
 .cell-data.red, .status.cancelled, .status.inactive {
     color: #d9534f;
     font-weight: 600;
     background-color: #ffebee;
 }
 
-/* ======================================= */
-/* ESTILOS ESPECÍFICOS DE CARGOS (NOVO)   */
-/* ======================================= */
-
-/* Estilo Base para o Cargo (Cliente/Editor) - Sem cor específica de status/produto */
 .cell-data.status {
     color: #4c4c4c; 
     background-color: #f5f5f5; 
     font-weight: 600;
 }
 
-/* Garante que o Administrador mantenha a cor de destaque (verde) */
 .cell-data.green.status { 
     color: #1a731d;
     background-color: #e6f9e6; 
 }
-
-/* Fim dos Estilos de Cargos */
-/* ======================================= */
-
 
 .actions {
     display: flex;
@@ -320,12 +293,6 @@ body {
     color: #fff;
     border-color: #03a9f4;
 }
-
-/* ======================================= */
-/* ESTILOS ESPECÍFICOS PARA FORMULÁRIOS */
-/* ======================================= */
-
-/* Sub-seções de Produto/Usuário (Lista/Formulário) */
 .sub-section {
     display: none;
 }
@@ -334,7 +301,6 @@ body {
     display: block;
 }
 
-/* Link Voltar */
 .back-link {
     display: inline-block;
     color: #1a731d;
@@ -351,7 +317,6 @@ body {
     color: #135c16;
 }
 
-/* Estilo do Container do Formulário */
 .form-container {
     background-color: #fff;
     padding: 30px;
@@ -432,11 +397,6 @@ legend {
     background-color: #135c16;
 }
 
-/* ======================================= */
-/* ESTILOS MODAL DE VENDAS */
-/* ======================================= */
-
-/* MODAL GERAL */
 .modal {
     display: none; 
     position: fixed;
@@ -506,7 +466,6 @@ legend {
     color: #333;
 }
 
-/* Tabela de Itens */
 .items-table {
     width: 100%;
     border-collapse: collapse;
@@ -525,7 +484,6 @@ legend {
     color: #1a731d;
 }
 
-/* Resumo Final */
 .total-summary {
     margin-top: 30px;
     text-align: right;
@@ -558,12 +516,7 @@ legend {
     background-color: #135c16;
 }
 
-/* ======================================= */
-/* RESPONSIVIDADE */
-/* ======================================= */
-
 @media (max-width: 992px) {
-    /* Sidebar Compacta */
     .sidebar {
         width: 80px;
     }
@@ -582,19 +535,18 @@ legend {
         font-size: 1.2rem;
     }
 
-    /* Tabelas em telas menores */
     .product-grid-template, .sales-grid-template, .users-grid-template {
         grid-template-columns: repeat(3, 1fr) !important;
         font-size: 0.9rem;
     }
     
-    .product-grid-template span:nth-child(4), /* Preço */
-    .product-grid-template span:nth-child(5) { /* Estoque */
+    .product-grid-template span:nth-child(4),
+    .product-grid-template span:nth-child(5) {
         display: none; 
     }
 
-    .sales-grid-template span:nth-child(2), /* Data */
-    .sales-grid-template span:nth-child(4) { /* Total */
+    .sales-grid-template span:nth-child(2),
+    .sales-grid-template span:nth-child(4) { 
         display: none; 
     }
 }
@@ -604,7 +556,6 @@ legend {
         flex-direction: column;
     }
     
-    /* Sidebar Mobile (Topo) */
     .sidebar {
         width: 100%;
         height: auto;
@@ -658,12 +609,10 @@ legend {
         width: 100%;
     }
 
-    /* Formulário Mobile */
     .form-grid {
         grid-template-columns: 1fr;
     }
 
-    /* Tabelas em formato de Card no Mobile */
     .data-table {
         box-shadow: none;
     }
@@ -695,7 +644,6 @@ legend {
         color: #1a731d;
         margin-right: 10px;
     }
-    /* Garante que os campos ocultados em 992px apareçam no mobile com label */
     .product-grid-template span:nth-child(4), 
     .product-grid-template span:nth-child(5),
     .sales-grid-template span:nth-child(2),
@@ -707,38 +655,23 @@ legend {
         margin-top: 10px;
     }
 }
-/* Se o seu ID é a primeira coluna na grade: */
 .table-row .cell-data:nth-child(1),
 .table-header span:nth-child(1) {
-    /* Alinha o ID um pouco mais para a direita */
     padding-left: 15px; 
-    text-align: left; /* Garante que comece da esquerda */
+    text-align: left; 
 }
 
-/* Se o seu Nome é a segunda coluna na grade: */
 .table-row .cell-data:nth-child(2),
 .table-header span:nth-child(2) {
-    /* Alinha o Nome um pouco mais para a direita */
     padding-left: 10px; 
-    text-align: left; /* Garante que comece da esquerda */
+    text-align: left; 
 }
 
-/* Opcional: Adicionar um padding lateral ao data-table para afastar tudo das bordas */
+
 .data-table {
-    padding-left: 5px; /* Ajuste o valor conforme sua necessidade */
+    padding-left: 5px; 
     padding-right: 5px;
 }
-
-
-/*
- * ARQUIVO: admin.css
- * Este arquivo unifica os estilos do Painel Admin (Dashboard, Produtos, Cupons, etc.).
- * Paleta de Cores: #1a731d (Verde Principal), #135c16 (Verde Hover), #f0f2f5 (Fundo Claro)
- */
-
-/* ======================================= */
-/* ESTILOS GERAIS E LAYOUT DA PÁGINA */
-/* ======================================= */
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -753,7 +686,6 @@ body {
     min-height: 100vh;
 }
 
-/* Área Principal de Conteúdo */
 .main-content {
     flex-grow: 1;
     padding: 30px;
@@ -768,7 +700,6 @@ body {
     padding-bottom: 10px;
 }
 
-/* Estilos para a navegação interna com JavaScript (seções que se alternam) */
 .management-section, .dashboard-section {
     display: none; 
     margin-bottom: 40px;
@@ -778,13 +709,9 @@ body {
     display: block; 
 }
 
-/* ======================================= */
-/* SIDEBAR DE NAVEGAÇÃO */
-/* ======================================= */
-
 .sidebar {
     width: 250px;
-    background-color: #1a731d; /* Verde Principal */
+    background-color: #1a731d;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -828,7 +755,7 @@ body {
 }
 
 .nav-item:hover, .nav-item.active {
-    background-color: #135c16; /* Verde Hover */
+    background-color: #135c16; 
 }
 
 .logout-section {
@@ -850,10 +777,6 @@ body {
 .logout-section a:hover {
     background-color: #135c16;
 }
-
-/* ======================================= */
-/* DASHBOARD E STATS */
-/* ======================================= */
 
 .stats-grid {
     display: grid;
@@ -888,9 +811,6 @@ body {
     margin: 5px 0 0;
 }
 
-/* ======================================= */
-/* AÇÕES E BUSCA (Produtos/Cupons) */
-/* ======================================= */
 .action-bar {
     display: flex;
     justify-content: space-between;
@@ -927,11 +847,6 @@ body {
     width: 300px;
 }
 
-
-/* ======================================= */
-/* TABELAS (Data Grid) - Estilos para Cupons e Produtos */
-/* ======================================= */
-
 .data-table {
     background-color: #fff;
     border-radius: 10px;
@@ -939,7 +854,6 @@ body {
     overflow: hidden;
 }
 
-/* Template de Grid para 6 colunas (Usado em Cupons) */
 .product-grid-template {
     grid-template-columns: 0.5fr 2fr 1fr 1fr 0.8fr 1fr; 
 }
@@ -968,7 +882,6 @@ body {
     color: #444;
 }
 
-/* Cores de status (Usado na coluna Status/Estoque) */
 .status {
     padding: 5px 10px;
     border-radius: 20px; 
@@ -979,19 +892,16 @@ body {
     font-weight: 600;
 }
 
-/* Status: Ativo / Estoque Alto (Verde) */
 .status.active {
     color: #1a731d;
     background-color: #e6f9e6; 
 }
 
-/* Status: Processando / Estoque Médio (Laranja) */
 .status.processing {
     color: #ff9800;
     background-color: #fff3e0;
 }
 
-/* Status: Inativo / Finalizado / Estoque Baixo (Vermelho) */
 .status.inactive, .status.cancelled {
     color: #d9534f;
     background-color: #ffebee;
@@ -1022,10 +932,6 @@ body {
     background-color: #d9534f;
     color: #fff;
 }
-
-/* ======================================= */
-/* SISTEMA DE BUSCA */
-/* ======================================= */
 
 .search-container {
     position: relative;
@@ -1077,7 +983,7 @@ body {
     font-style: italic;
 }
 
-/* Animação para resultados de busca */
+
 .table-row {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
@@ -1087,16 +993,12 @@ body {
     transform: translateX(-10px);
 }
 
-/* Destaque para resultados encontrados */
+
 .search-highlight {
     background-color: #fff3cd;
     padding: 2px 4px;
     border-radius: 3px;
 }
-
-/* ======================================= */
-/* RESPONSIVIDADE (Ajustes para Mobile/Tablet) */
-/* ======================================= */
 
 @media (max-width: 992px) {
     .sidebar { width: 80px; }
@@ -1105,7 +1007,6 @@ body {
     .nav-item i { margin-right: 0; font-size: 1.2rem; }
     .nav-item span { display: none; } 
 
-    /* Tabela: Reduz colunas para tablet */
     .product-grid-template {
         grid-template-columns: repeat(3, 1fr) !important;
         font-size: 0.9rem;
@@ -1118,7 +1019,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    /* Layout Mobile: Sidebar horizontal */
     .admin-layout { flex-direction: column; }
     .sidebar { width: 100%; flex-direction: row; padding: 10px 20px; }
     .sidebar-header { padding: 0; border: none; flex-grow: 1; text-align: left; }
@@ -1131,7 +1031,6 @@ body {
     .action-bar { flex-direction: column; gap: 10px; }
     .search-input, .add-btn { width: 100%; }
 
-    /* Tabela em formato de Card no Mobile */
     .data-table { box-shadow: none; }
     .table-header { display: none; }
     
@@ -1145,7 +1044,6 @@ body {
         border-bottom: 1px dashed #eee; padding: 5px 0;
     }
 
-    /* Adiciona labels para as colunas no mobile */
     .table-row .cell-data:before {
         content: attr(data-label); font-weight: 600; color: #1a731d; margin-right: 10px;
     }

@@ -1,18 +1,15 @@
 <?php
 require_once 'connection.php';
 
-// Mensagens de retorno
 $erro = '';
 $sucesso = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nome'])) {
     try {
-        // Verificar conexão
         if ($conn->connect_error) {
             throw new Exception("Erro na conexão com o banco de dados: " . $conn->connect_error);
         }
 
-        // Dados do formulário
         $nome = trim($_POST['nome']);
         $sku = trim($_POST['sku']);
         $preco = floatval($_POST['preco']);
@@ -36,10 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nome'])) {
             throw new Exception("Já existe um produto com este código (SKU).");
         }
 
-        // -------------------------------
-        // 🖼️ Upload da Imagem
-        // -------------------------------
-        $caminho_final = null; // Caminho que será salvo no banco
+        $caminho_final = null;
 
         if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
             $pasta = "uploads/";
@@ -62,14 +56,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nome'])) {
                 throw new Exception("Erro ao salvar a imagem no servidor.");
             }
         } else {
-            // Se quiser tornar a imagem obrigatória, descomente abaixo:
-            // throw new Exception("A imagem do produto é obrigatória.");
-            $caminho_final = "uploads/sem_imagem.png"; // imagem padrão opcional
+
+            $caminho_final = "uploads/sem_imagem.png";
         }
 
-        // -------------------------------
-        // 💾 Inserir produto no banco
-        // -------------------------------
         $insert_sql = "INSERT INTO produtos 
             (cod_produto, nome_produto, descricao_produto, preco, qtd_estoque, categoria, imagem)
             VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -79,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nome'])) {
             throw new Exception("Erro ao preparar statement: " . $conn->error);
         }
 
-        // ✅ Correção final: 7 parâmetros = 7 tipos
         $insert_stmt->bind_param("sssdiss", $sku, $nome, $descricao, $preco, $estoque, $categoria, $caminho_final);
 
         if ($insert_stmt->execute()) {
@@ -90,19 +79,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['nome'])) {
 
         $insert_stmt->close();
         $check_stmt->close();
-
     } catch (Exception $e) {
         $erro = $e->getMessage();
         error_log("Erro ao cadastrar produto: " . $erro);
     }
 }
 
-// Fechar conexão
 if (isset($conn)) {
     $conn->close();
 }
 
-// Redirecionar com mensagens
 $redirect_url = "produtos.php";
 if (!empty($erro)) {
     $redirect_url .= "?erro=" . urlencode($erro);
@@ -112,4 +98,3 @@ if (!empty($erro)) {
 
 header("Location: " . $redirect_url);
 exit();
-?>

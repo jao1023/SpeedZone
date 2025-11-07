@@ -1,6 +1,3 @@
-
-// Arquivo: usuarios.js
-
 document.addEventListener('DOMContentLoaded', function() {
     const listView = document.getElementById('user-list-view');
     const formView = document.getElementById('user-form-view');
@@ -9,14 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const formTitle = document.getElementById('user-form-title');
     const submitButton = document.getElementById('submit-user-btn');
 
-    // Mapeamento dos campos do formulário
     const formFields = {
         id: document.getElementById('user-id'),
         nome: document.getElementById('user-nome'),
         email: document.getElementById('user-email'),
         cargo: document.getElementById('user-cargo'),
         status: document.getElementById('user-status'),
-        // O campo 'registro' está desabilitado e não será enviado
     };
 
     /**
@@ -30,37 +25,27 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             formView.classList.remove('active');
             listView.classList.add('active');
-            // Limpa o formulário ao voltar para a lista
             userForm.reset(); 
-            formFields.id.value = ''; // Garante que o ID está vazio
+            formFields.id.value = '';
         }
     }
 
-    // 1. Evento para voltar à lista
     hideFormLink.addEventListener('click', function(e) {
         e.preventDefault();
         toggleView('list');
     });
 
-    // 2. Evento para carregar e exibir o formulário de edição
     document.querySelectorAll('.edit-user-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const userId = this.getAttribute('href').split('id=')[1];
-            
-            // Define o título e o botão para edição
+
             formTitle.textContent = `Editar Usuário (ID: ${userId})`;
             submitButton.textContent = 'Salvar Alterações';
-            formFields.id.value = userId; // Define o ID para o handler PHP
-
-            // Busca os dados atuais do usuário (Simulação, pois você já os tem na tabela)
-            // Em uma aplicação real, você faria um AJAX para um endpoint 'fetch_user_data.php?id=...'
-            
-            // Para simplificar, vamos obter os dados da linha da tabela (menos seguro, mas rápido)
+            formFields.id.value = userId;
             const row = document.querySelector(`.table-row[data-user-id='${userId}']`);
             
             if (row) {
-                // Obtém os dados da linha para preencher o formulário
                 const name = row.children[1].textContent.trim();
                 const email = row.children[2].textContent.trim();
                 const cargo = row.children[3].textContent.trim();
@@ -70,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 formFields.email.value = email;
                 formFields.cargo.value = cargo;
                 formFields.status.value = status; 
-                // Telefone não está na linha, precisaria de um endpoint AJAX real.
                 
                 toggleView('form');
             } else {
@@ -78,13 +62,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // 3. Submissão do Formulário via AJAX (para evitar recarregar a página)
+
     userForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
         const formData = new FormData(this);
-        const actionUrl = this.getAttribute('action'); // edit_usuario_handler.php
+        const actionUrl = this.getAttribute('action');
         
         submitButton.disabled = true;
         submitButton.textContent = 'Salvando...';
@@ -95,9 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            alert(data.message); // Exibe mensagem de sucesso ou erro
+            alert(data.message);
             if (data.success) {
-                // Recarrega a página para atualizar a lista ou volta para ela
                 window.location.href = 'usuarios.php' + (new URLSearchParams(window.location.search).toString() ? '?' + new URLSearchParams(window.location.search).toString() : '');
             } else {
                  submitButton.disabled = false;
@@ -113,27 +95,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Arquivo: usuarios.js (Adicione no final, ou dentro do DOMContentLoaded)
 
 document.addEventListener('DOMContentLoaded', function() {
-    // ... (Seu código anterior do toggleView, edit-user-btn, e form submit) ...
 
-    // 4. Evento para Confirmação de Exclusão
     document.querySelectorAll('.delete-user-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             const userNameElement = this.closest('.table-row').children[1];
             const userName = userNameElement ? userNameElement.textContent.trim() : 'este usuário';
-            
-            // Pergunta de confirmação antes de permitir a exclusão
+
             if (!confirm(`Tem certeza que deseja DELETAR o usuário: ${userName}? Esta ação é irreversível.`)) {
-                e.preventDefault(); // Impede o link de ser seguido se o usuário clicar em "Cancelar"
+                e.preventDefault();
             }
         });
     });
 });
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // Elementos da Visualização
+o
     const userListView = document.getElementById('user-list-view');
     const userFormView = document.getElementById('user-form-view');
     const formTitle = document.getElementById('user-form-title');
@@ -142,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const editBtns = document.querySelectorAll('.edit-user-btn');
     const userForm = document.querySelector('.user-form');
 
-    // Simulação de Dados de Usuários
     const usersData = {
         '1': { id: '1', nome: 'Admin Master', email: 'admin@speedzone.com', telefone: '(41) 9999-0000', registro: '01/01/2025', cargo: 'admin', status: 'active' },
         '2': { id: '2', nome: 'João Cliente Silva', email: 'joao.silva@cliente.com', telefone: '(11) 9888-1111', registro: '20/09/2025', cargo: 'cliente', status: 'active' },
@@ -166,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formTitle.textContent = `Editar Usuário #${id}`;
             document.getElementById('user-id').value = user.id;
             
-            // Preenche os campos do formulário
+
             document.getElementById('user-nome').value = user.nome;
             document.getElementById('user-email').value = user.email;
             document.getElementById('user-telefone').value = user.telefone;
@@ -179,12 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Ações de Visualização
     if (showCreateFormBtn) showCreateFormBtn.addEventListener('click', () => {
         formTitle.textContent = 'Adicionar Novo Usuário';
         document.getElementById('user-id').value = '';
         document.getElementById('submit-user-btn').textContent = 'Criar Usuário';
-        document.getElementById('user-registro').value = new Date().toLocaleDateString('pt-BR'); // Data atual
+        document.getElementById('user-registro').value = new Date().toLocaleDateString('pt-BR');
         userForm.reset();
         toggleUserView(true);
     });
@@ -195,6 +170,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-
-    // Ação de Salvar/Criar
 });

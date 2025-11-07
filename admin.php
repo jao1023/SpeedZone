@@ -9,7 +9,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
 // Verificar se o usuário tem permissão (Funcionario ou Administrador)
 $user_cargo = $_SESSION['cargo'] ?? 'Cliente';
 if (!in_array($user_cargo, ['Funcionario', 'Administrador'])) {
-    // Redireciona para a página principal se não tiver permissão
     header("Location: index.php?error=access_denied");
     exit;
 }
@@ -71,9 +70,12 @@ try {
     $chart_labels = $labels;
     $chart_values = $values;
 
-    // Configuração dinâmica do eixo Y: até 150k -> passos de 10k; acima -> 100k
     $chart_max_value = 0.0;
-    foreach ($chart_values as $v) { if ($v > $chart_max_value) { $chart_max_value = $v; } }
+    foreach ($chart_values as $v) {
+        if ($v > $chart_max_value) {
+            $chart_max_value = $v;
+        }
+    }
     $y_step = ($chart_max_value <= 150000) ? 10000 : 100000;
     $y_max  = max($y_step, ceil(($chart_max_value > 0 ? $chart_max_value : $y_step) / $y_step) * $y_step);
 } catch (Exception $e) {
@@ -146,45 +148,46 @@ try {
                     <canvas id="salesByDayChart" style="width:100%; height:320px;"></canvas>
                 </div>
             </section>
-            
+
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        (function(){
+        (function() {
             const ctx = document.getElementById('salesByDayChart');
             if (!ctx) return;
             let labels = <?php echo json_encode($chart_labels); ?>;
             let values = <?php echo json_encode($chart_values); ?>;
             let yMax = <?php echo json_encode($y_max ?? 0); ?>;
             let yStep = <?php echo json_encode($y_step ?? 10000); ?>;
- 
-             // Guardar contra dados vazios
-             if (!Array.isArray(labels) || labels.length === 0) {
-                 labels = ['—'];
-                 values = [0];
-                 yMax = yMax && yMax > 0 ? yMax : 10000;
-                 yStep = yStep && yStep > 0 ? yStep : 10000;
-             }
- 
-             // Evitar grande número de ticks: limitar a ~10 divisões
-             if (yMax > 0 && yStep > 0) {
-                 const steps = Math.ceil(yMax / yStep);
-                 if (steps > 10) {
-                     const targetStep = Math.ceil((yMax / 10));
-                     // arredonda para múltiplos de 1000
-                     const rounded = Math.ceil(targetStep / 1000) * 1000;
-                     yStep = Math.max(rounded, 1000);
-                 }
-             }
-             // Garantir yMax coerente com yStep
-             if (yStep > 0) {
-                 yMax = Math.max(yStep, Math.ceil((yMax || yStep) / yStep) * yStep);
-             }
+
+            // Guardar contra dados vazios
+            if (!Array.isArray(labels) || labels.length === 0) {
+                labels = ['—'];
+                values = [0];
+                yMax = yMax && yMax > 0 ? yMax : 10000;
+                yStep = yStep && yStep > 0 ? yStep : 10000;
+            }
+
+            // Evitar grande número de ticks: limitar a ~10 divisões
+            if (yMax > 0 && yStep > 0) {
+                const steps = Math.ceil(yMax / yStep);
+                if (steps > 10) {
+                    const targetStep = Math.ceil((yMax / 10));
+                    // arredonda para múltiplos de 1000
+                    const rounded = Math.ceil(targetStep / 1000) * 1000;
+                    yStep = Math.max(rounded, 1000);
+                }
+            }
+            if (yStep > 0) {
+                yMax = Math.max(yStep, Math.ceil((yMax || yStep) / yStep) * yStep);
+            }
 
             // Evitar múltiplas instâncias
             if (window.__salesByDayChartInstance) {
-                try { window.__salesByDayChartInstance.destroy(); } catch(e) {}
+                try {
+                    window.__salesByDayChartInstance.destroy();
+                } catch (e) {}
             }
 
             window.__salesByDayChartInstance = new Chart(ctx, {
@@ -214,19 +217,27 @@ try {
                             ticks: {
                                 stepSize: yStep,
                                 maxTicksLimit: 10,
-                                callback: function(value){
-                                    return 'R$ ' + Number(value).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                                callback: function(value) {
+                                    return 'R$ ' + Number(value).toLocaleString('pt-BR', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    });
                                 }
                             }
                         }
                     },
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: false
+                        },
                         tooltip: {
                             callbacks: {
-                                label: function(context){
+                                label: function(context) {
                                     const v = context.parsed.y || 0;
-                                    return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                    return 'R$ ' + Number(v).toLocaleString('pt-BR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    });
                                 }
                             }
                         }

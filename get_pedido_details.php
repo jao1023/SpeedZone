@@ -12,7 +12,6 @@ if (empty($codigo_pedido)) {
 }
 
 try {
-    // Buscar informações do pedido
     $sql_pedido = "SELECT pf.codigo_pedido, p.status_pedido, pf.total_final, pf.data_pedido, pf.frete, pf.total_produtos,
                           u.primeiro_nome, u.ultimo_nome, u.email, u.cep, u.rua, u.numero, u.complemento, u.bairro, u.cidade, u.estado
                    FROM pedidos_finalizados pf
@@ -20,32 +19,31 @@ try {
                    LEFT JOIN usuario u ON pf.id_usuario = u.id_usuario
                    WHERE pf.codigo_pedido = ?
                    LIMIT 1";
-    
+
     $stmt_pedido = $conn->prepare($sql_pedido);
     $stmt_pedido->bind_param("s", $codigo_pedido);
     $stmt_pedido->execute();
     $result_pedido = $stmt_pedido->get_result();
-    
+
     if ($result_pedido->num_rows === 0) {
         echo json_encode(['success' => false, 'message' => 'Pedido não encontrado']);
         exit;
     }
-    
+
     $pedido = $result_pedido->fetch_assoc();
     $stmt_pedido->close();
-    
-    // Buscar itens do pedido
+
     $sql_itens = "SELECT p.id_produto, p.valor_total, pr.nome_produto, pr.cod_produto,
                          (p.valor_total / pr.preco) as quantidade
                   FROM pedidos p
                   JOIN produtos pr ON p.id_produto = pr.id_produto
                   WHERE SUBSTRING(p.cod_pedido, 1, LOCATE('-', p.cod_pedido, LOCATE('-', p.cod_pedido) + 1) - 1) = ?";
-    
+
     $stmt_itens = $conn->prepare($sql_itens);
     $stmt_itens->bind_param("s", $codigo_pedido);
     $stmt_itens->execute();
     $result_itens = $stmt_itens->get_result();
-    
+
     $itens = array();
     while ($item = $result_itens->fetch_assoc()) {
         $itens[] = array(
@@ -56,8 +54,7 @@ try {
         );
     }
     $stmt_itens->close();
-    
-    // Montar endereço completo
+
     $endereco_parts = array();
     if ($pedido['rua']) $endereco_parts[] = $pedido['rua'];
     if ($pedido['numero']) $endereco_parts[] = $pedido['numero'];
@@ -66,10 +63,9 @@ try {
     if ($pedido['cidade']) $endereco_parts[] = $pedido['cidade'];
     if ($pedido['estado']) $endereco_parts[] = $pedido['estado'];
     if ($pedido['cep']) $endereco_parts[] = 'CEP: ' . $pedido['cep'];
-    
+
     $endereco_completo = implode(', ', $endereco_parts);
-    
-    // Preparar resposta
+
     $response = array(
         'success' => true,
         'pedido' => array(
@@ -85,9 +81,8 @@ try {
             'itens' => $itens
         )
     );
-    
+
     echo json_encode($response);
-    
 } catch (Exception $e) {
     error_log("Erro ao buscar detalhes do pedido: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Erro interno do servidor']);

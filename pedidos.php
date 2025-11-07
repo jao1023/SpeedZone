@@ -2,7 +2,6 @@
 <?php
 require_once 'connection.php';
 
-// Exigir login
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
     header("Location: login.php");
     exit;
@@ -10,40 +9,37 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
 
 $id_usuario = $_SESSION['user_id'] ?? null;
 
-// Buscar pedidos do usuário
 $pedidos = array();
 if ($id_usuario) {
     try {
-        // Buscar pedidos finalizados do usuário
         $sql = "SELECT DISTINCT pf.codigo_pedido as cod_pedido_base,
                        p.status_pedido, pf.total_final, pf.data_pedido 
                 FROM pedidos_finalizados pf
                 LEFT JOIN pedidos p ON SUBSTRING(p.cod_pedido, 1, LOCATE('-', p.cod_pedido, LOCATE('-', p.cod_pedido) + 1) - 1) = pf.codigo_pedido
                 WHERE pf.id_usuario = ? 
                 ORDER BY pf.data_pedido DESC";
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_usuario);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         while ($row = $result->fetch_assoc()) {
             $pedidos[] = $row;
         }
         $stmt->close();
-        
     } catch (Exception $e) {
         error_log("Erro ao buscar pedidos: " . $e->getMessage());
     }
 }
 
-// Função para formatar data
-function formatarData($data) {
+function formatarData($data)
+{
     return date('d/m/Y', strtotime($data));
 }
 
-// Função para obter classe CSS do status
-function getStatusClass($status) {
+function getStatusClass($status)
+{
     switch ($status) {
         case 'Entregue':
             return 'delivered';

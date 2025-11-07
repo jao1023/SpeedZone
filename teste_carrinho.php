@@ -4,15 +4,14 @@ require_once 'carrinho_functions.php';
 
 echo "<h2>Teste do Carrinho</h2>";
 
-// Adicionar um produto de teste ao carrinho
 adicionarAoCarrinho(1, 2);
 
-echo "✅ Produto adicionado ao carrinho<br>";
+echo " Produto adicionado ao carrinho<br>";
 
 // Obter detalhes do carrinho
 $carrinho = obterCarrinhoComDetalhes();
 
-echo "📦 Itens no carrinho: " . count($carrinho) . "<br>";
+echo "Itens no carrinho: " . count($carrinho) . "<br>";
 
 if (!empty($carrinho)) {
     foreach ($carrinho as $item) {

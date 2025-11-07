@@ -30,7 +30,7 @@ try {
                 $response['message'] = 'Dados inválidos.';
             }
             break;
-            
+
         case 'remover':
             if ($produto_id > 0) {
                 removerDoCarrinho($produto_id);
@@ -41,7 +41,7 @@ try {
                 $response['message'] = 'ID do produto inválido.';
             }
             break;
-            
+
         case 'atualizar':
             if ($produto_id > 0) {
                 $resultado = atualizarQuantidade($produto_id, $quantidade);
@@ -61,20 +61,20 @@ try {
                 $response['message'] = 'Dados inválidos.';
             }
             break;
-            
+
         case 'limpar':
             limparCarrinho();
             $response['success'] = true;
             $response['message'] = 'Carrinho limpo!';
             $response['total_itens'] = 0;
             break;
-            
+
         case 'aplicar_cupom':
             $codigo_cupom = $_POST['codigo_cupom'] ?? '';
             $resultado = aplicarCupomAoCarrinho($codigo_cupom);
             $response = $resultado;
             break;
-            
+
         case 'finalizar_compra':
             // Usar usuário logado
             $id_usuario = $_SESSION['user_id'] ?? null;
@@ -111,11 +111,10 @@ try {
             $resultado = finalizarCompra($id_usuario);
             $response = $resultado;
             break;
-            
+
         default:
             $response['message'] = 'Ação inválida.';
     }
-    
 } catch (Exception $e) {
     $response['message'] = 'Erro: ' . $e->getMessage();
     error_log("Erro no carrinho_action.php: " . $e->getMessage());

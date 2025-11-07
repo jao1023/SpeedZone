@@ -1,4 +1,3 @@
-/* Geral */
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #f0f2f5;
@@ -11,7 +10,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Botão de Voltar */
 .back-btn {
     position: absolute;
     top: 25px;
@@ -28,7 +26,6 @@ body {
     color: #135c16;
 }
 
-/* Estilos para a página de produto */
 .product-container {
     display: flex;
     max-width: 1200px;
@@ -155,7 +152,6 @@ body {
     }
 }
 
-/* Novos estilos para informações do produto */
 .product-info {
     margin: 20px 0;
     padding: 15px;

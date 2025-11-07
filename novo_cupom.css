@@ -1,6 +1,4 @@
-/* ======================================= */
-/* ESTILOS DO FORMULÁRIO (Novo Cupom) */
-/* ======================================= */
+
 
 .form-container {
     background-color: #fff;
@@ -89,9 +87,7 @@
     background-color: #bbb;
 }
 
-/* Regras de responsividade para o formulário (no final do admin.css) */
 @media (max-width: 768px) {
-    /* ... outras regras ... */
     
     .flex-row {
         flex-direction: column;

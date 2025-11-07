@@ -1,23 +1,20 @@
 <?php require_once __DIR__ . '/session.php'; ?>
 <?php
-// Arquivo: suporte.php
 
-// Redireciona se o usuário não estiver logado
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== TRUE) {
     header("Location: login.php");
     exit;
 }
 
-// Assumindo que 'connection.php' estabelece a variável $conn (MySQLi)
-require_once 'connection.php'; 
+
+require_once 'connection.php';
 
 $user_id = $_SESSION['user_id'];
 $error = '';
 $success = '';
-$user_data = []; // Inicializa a variável
+$user_data = [];
 
-// --- CARREGAMENTO DOS DADOS DO USUÁRIO ---
-$sql_select = "SELECT primeiro_nome, email FROM usuario WHERE id_usuario = ?"; 
+$sql_select = "SELECT primeiro_nome, email FROM usuario WHERE id_usuario = ?";
 if ($stmt_select = $conn->prepare($sql_select)) {
     $stmt_select->bind_param("i", $user_id);
     $stmt_select->execute();
@@ -26,7 +23,7 @@ if ($stmt_select = $conn->prepare($sql_select)) {
     if ($result->num_rows === 1) {
         $user_data = $result->fetch_assoc();
     } else {
-        $error .= "Erro: Dados do usuário (nome/email) não encontrados ou ID inválido. "; 
+        $error .= "Erro: Dados do usuário (nome/email) não encontrados ou ID inválido. ";
     }
 
     $stmt_select->close();
@@ -34,20 +31,15 @@ if ($stmt_select = $conn->prepare($sql_select)) {
     $error .= "Erro ao preparar a consulta de dados do usuário: " . $conn->error;
 }
 
-
-// --- PROCESSAMENTO DO FORMULÁRIO DE SUPORTE ---
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // 1. Coleta os dados do usuário logado
     $nome_cliente = $user_data['primeiro_nome'] ?? 'Cliente Desconhecido';
-    $email        = $user_data['email'] ?? 'desconhecido@email.com'; 
-    
-    // 2. Coleta e SANEAMENTO dos campos preenchíveis
+    $email        = $user_data['email'] ?? 'desconhecido@email.com';
+
     $tipo         = filter_input(INPUT_POST, 'issueType', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $descricao    = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $status_inicial = 'Ativo'; 
+    $status_inicial = 'Ativo';
 
-    // 3. Mapeamento dos valores curtos do HTML para o ENUM longo do SQL
     $tipo_sql = [
         'pedido' => 'Duvida sobre um pedido',
         'produto' => 'Informações sobre produto',
@@ -57,27 +49,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ][$tipo] ?? null;
 
     if ($tipo_sql && $descricao) {
-        // 4. Preparação da Consulta SQL para Inserção
-        // Assumindo que a coluna na tabela 'suporte' é 'nome_usuario' (ajuste se for diferente, ex: 'nome_cliente' ou 'nome')
         $sql_insert = "INSERT INTO suporte (id_cliente, nome_cliente, email, tipo, status_pedido, descricao) 
                        VALUES (?, ?, ?, ?, ?, ?)";
-        
+
         if ($stmt_insert = $conn->prepare($sql_insert)) {
-            
-            // CORREÇÃO: Variável $nome_cliente estava sendo chamada incorretamente como $nome_usuario
-            $stmt_insert->bind_param("isssss", 
-                                $user_id, 
-                                $nome_cliente, // CORRIGIDO
-                                $email, 
-                                $tipo_sql, 
-                                $status_inicial, 
-                                $descricao);
-            
+
+            $stmt_insert->bind_param(
+                "isssss",
+                $user_id,
+                $nome_cliente,
+                $email,
+                $tipo_sql,
+                $status_inicial,
+                $descricao
+            );
+
             if ($stmt_insert->execute()) {
-                // SUCESSO! IMPLEMENTANDO PRG para evitar duplicidade
+
                 $_SESSION['success_message'] = "Solicitação enviada com sucesso!";
-                header("Location: suporte.php"); // Redireciona para a mesma página, mas via GET
-                exit; // Encerra o script após o redirecionamento
+                header("Location: suporte.php");
+                exit;
             } else {
                 $error .= "Erro ao enviar solicitação: " . $stmt_insert->error;
             }
@@ -90,18 +81,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// 5. Verifica se há mensagem de sucesso na sessão (do redirecionamento PRG)
+
 if (isset($_SESSION['success_message'])) {
     $success = $_SESSION['success_message'];
-    unset($_SESSION['success_message']); // Remove a mensagem para que não apareça novamente
+    unset($_SESSION['success_message']);
 }
 
-// 6. Fechamento da conexão no final do script
+
 $conn->close();
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -111,10 +103,26 @@ $conn->close();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        .error-message { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
-        .success-message { color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .success-message {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
     </style>
 </head>
+
 <body>
     <a href="index.php" class="back-btn">
         &lt; Voltar
@@ -126,9 +134,9 @@ $conn->close();
             <p class="support-intro">
                 Preencha o formulário abaixo para abrir um novo chamado. Nossa equipe de suporte responderá o mais rápido possível.
             </p>
-            
+
             <?php
-            // Exibe as mensagens de feedback
+
             if ($error) {
                 echo "<div class='error-message'>{$error}</div>";
             }
@@ -136,14 +144,14 @@ $conn->close();
                 echo "<div class='success-message'>{$success}</div>";
             }
             ?>
-            
+
             <form action="suporte.php" method="POST" class="support-form">
-                
+
                 <div class="form-group">
                     <label for="name">Seu Nome</label>
                     <input type="text" id="name" name="name" value="<?= htmlspecialchars($user_data['primeiro_nome'] ?? '') ?>" disabled>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="email">Seu Email</label>
                     <input type="email" id="email" name="email" value="<?= htmlspecialchars($user_data['email'] ?? '') ?>" disabled>
@@ -165,10 +173,11 @@ $conn->close();
                     <label for="description">Descrição do Problema</label>
                     <textarea id="description" name="description" rows="6" placeholder="Descreva seu problema ou dúvida com o máximo de detalhes possível." required></textarea>
                 </div>
-                
+
                 <button type="submit" class="submit-btn">Enviar Solicitação</button>
             </form>
         </section>
     </div>
 </body>
+
 </html>

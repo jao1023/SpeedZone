@@ -1,9 +1,7 @@
 <?php require_once __DIR__ . '/session.php'; ?>
 <?php
-// Arquivo PHP: delete_cupom.php - Processa a exclusão de um cupom
 
-// Inclui a conexão com o banco de dados
-require_once 'connection.php'; 
+require_once 'connection.php';
 
 // Verifica se o ID foi passado via GET
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -21,8 +19,8 @@ if ($cupom_id > 0) {
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
-        $stmt->bind_param("i", $cupom_id); 
-        
+        $stmt->bind_param("i", $cupom_id);
+
         if ($stmt->execute()) {
             if ($stmt->affected_rows > 0) {
                 // Sucesso na exclusão

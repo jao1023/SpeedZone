@@ -17,4 +17,3 @@ register_shutdown_function(function () {
         session_write_close();
     }
 });
-

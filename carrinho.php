@@ -66,11 +66,11 @@ if ($user_id) {
                 <?php if (!empty($carrinho_itens)): ?>
                     <?php foreach ($carrinho_itens as $item): ?>
                         <div class="cart-item" data-produto-id="<?php echo $item['id_produto']; ?>">
-                            <img src="<?php echo htmlspecialchars($item['imagem'] ?? 'uploads/sem_imagem.png'); ?>" 
-                                 alt="<?php echo htmlspecialchars($item['nome_produto']); ?>" 
-                                 class="item-image" 
-                                 style="width:120px; height:120px; object-fit:contain;"
-                                 onerror="this.src='uploads/sem_imagem.png';">
+                            <img src="<?php echo htmlspecialchars($item['imagem'] ?? 'uploads/sem_imagem.png'); ?>"
+                                alt="<?php echo htmlspecialchars($item['nome_produto']); ?>"
+                                class="item-image"
+                                style="width:120px; height:120px; object-fit:contain;"
+                                onerror="this.src='uploads/sem_imagem.png';">
                             <div class="item-details">
                                 <p class="item-name"><?php echo htmlspecialchars($item['nome_produto']); ?></p>
                                 <p class="item-price">R$ <?php echo number_format($item['preco'], 2, ',', '.'); ?></p>
@@ -94,7 +94,7 @@ if ($user_id) {
             <div class="cart-summary-section">
                 <div class="summary-details">
                     <h2 class="summary-title">Resumo do Pedido</h2>
-                    
+
                     <!-- Endereço de Entrega -->
                     <div class="address-section" style="margin-bottom: 16px;">
                         <h3 style="margin: 0 0 8px; font-size: 16px;">Endereço de Entrega</h3>
@@ -103,7 +103,7 @@ if ($user_id) {
                                 <div style="font-size: 14px; color: #333;">
                                     <div><?php echo htmlspecialchars($user_address['rua']); ?>, <?php echo htmlspecialchars($user_address['numero']); ?><?php echo !empty($user_address['complemento']) ? ' - ' . htmlspecialchars($user_address['complemento']) : ''; ?></div>
                                     <div><?php echo htmlspecialchars($user_address['bairro']); ?> - <?php echo htmlspecialchars($user_address['cidade']); ?>/<?php echo htmlspecialchars($user_address['estado']); ?></div>
-                                    <div>CEP: <?php echo htmlspecialchars(substr(preg_replace('/\D/','', $user_address['cep']),0,5) . '-' . substr(preg_replace('/\D/','', $user_address['cep']),5)); ?></div>
+                                    <div>CEP: <?php echo htmlspecialchars(substr(preg_replace('/\D/', '', $user_address['cep']), 0, 5) . '-' . substr(preg_replace('/\D/', '', $user_address['cep']), 5)); ?></div>
                                 </div>
                             <?php else: ?>
                                 <div style="font-size: 14px; color: #b45309; background: #fffbeb; border: 1px solid #f59e0b; padding: 8px; border-radius: 6px;">Endereço incompleto. Atualize para continuar.</div>
@@ -119,7 +119,7 @@ if ($user_id) {
                             </div>
                         <?php endif; ?>
                     </div>
-                    
+
                     <!-- Campo de Cupom -->
                     <div class="cupom-section">
                         <div class="cupom-input-group">
@@ -128,7 +128,7 @@ if ($user_id) {
                         </div>
                         <div id="cupom-message" class="cupom-message"></div>
                     </div>
-                    
+
                     <div class="summary-line">
                         <span>Subtotal</span>
                         <span class="subtotal-price">R$ <?php echo number_format($total_carrinho, 2, ',', '.'); ?></span>
@@ -138,15 +138,15 @@ if ($user_id) {
                         <span class="shipping-price">R$ <?php echo number_format($frete, 2, ',', '.'); ?></span>
                     </div>
                     <?php if ($cupom_aplicado): ?>
-                    <div id="cupom-discount-line" class="summary-line cupom-discount">
-                        <span>Desconto (<?php echo htmlspecialchars($cupom_aplicado['codigo']); ?>)</span>
-                        <span class="discount-price">-R$ <?php echo number_format($desconto_cupom, 2, ',', '.'); ?></span>
-                    </div>
+                        <div id="cupom-discount-line" class="summary-line cupom-discount">
+                            <span>Desconto (<?php echo htmlspecialchars($cupom_aplicado['codigo']); ?>)</span>
+                            <span class="discount-price">-R$ <?php echo number_format($desconto_cupom, 2, ',', '.'); ?></span>
+                        </div>
                     <?php else: ?>
-                    <div id="cupom-discount-line" class="summary-line cupom-discount" style="display: none;">
-                        <span>Desconto</span>
-                        <span class="discount-price">-R$ 0,00</span>
-                    </div>
+                        <div id="cupom-discount-line" class="summary-line cupom-discount" style="display: none;">
+                            <span>Desconto</span>
+                            <span class="discount-price">-R$ 0,00</span>
+                        </div>
                     <?php endif; ?>
                     <div class="summary-total-line">
                         <span>Total</span>
@@ -168,45 +168,92 @@ if ($user_id) {
     <script>
         function atualizarQuantidade(produtoId, quantidade) {
             fetch('carrinho_action.php', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `acao=atualizar&produto_id=${produtoId}&quantidade=${quantidade}`
-            })
-            .then(response => response.json())
-            .then(data => { if (data.success) location.reload(); else alert('Erro: ' + data.message); })
-            .catch(error => { console.error('Erro:', error); alert('Erro ao atualizar quantidade'); });
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `acao=atualizar&produto_id=${produtoId}&quantidade=${quantidade}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) location.reload();
+                    else alert('Erro: ' + data.message);
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao atualizar quantidade');
+                });
         }
 
         function removerItem(produtoId) {
             if (confirm('Tem certeza que deseja remover este item do carrinho?')) {
                 fetch('carrinho_action.php', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `acao=remover&produto_id=${produtoId}`
-                })
-                .then(response => response.json())
-                .then(data => { if (data.success) location.reload(); else alert('Erro: ' + data.message); })
-                .catch(error => { console.error('Erro:', error); alert('Erro ao remover item'); });
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: `acao=remover&produto_id=${produtoId}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) location.reload();
+                        else alert('Erro: ' + data.message);
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        alert('Erro ao remover item');
+                    });
             }
         }
 
         function limparCarrinho() {
             if (confirm('Tem certeza que deseja limpar todo o carrinho?')) {
-                fetch('carrinho_action.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'acao=limpar' })
-                .then(response => response.json())
-                .then(data => { if (data.success) location.reload(); else alert('Erro: ' + data.message); })
-                .catch(error => { console.error('Erro:', error); alert('Erro ao limpar carrinho'); });
+                fetch('carrinho_action.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'acao=limpar'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) location.reload();
+                        else alert('Erro: ' + data.message);
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        alert('Erro ao limpar carrinho');
+                    });
             }
         }
 
         function aplicarCupom() {
             const codigoCupom = document.getElementById('cupom-codigo').value.trim();
             const messageDiv = document.getElementById('cupom-message');
-            if (!codigoCupom) { messageDiv.innerHTML = '<span class="error">Digite um código de cupom</span>'; return; }
-            fetch('carrinho_action.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `acao=aplicar_cupom&codigo_cupom=${encodeURIComponent(codigoCupom)}` })
-            .then(response => response.json())
-            .then(data => { if (data.success) { messageDiv.innerHTML = `<span class="success">${data.message}</span>`; atualizarResumoComCupom(data.desconto, data.total_final); } else { messageDiv.innerHTML = `<span class="error">${data.message}</span>`; } })
-            .catch(error => { console.error('Erro:', error); messageDiv.innerHTML = '<span class="error">Erro ao aplicar cupom</span>'; });
+            if (!codigoCupom) {
+                messageDiv.innerHTML = '<span class="error">Digite um código de cupom</span>';
+                return;
+            }
+            fetch('carrinho_action.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `acao=aplicar_cupom&codigo_cupom=${encodeURIComponent(codigoCupom)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        messageDiv.innerHTML = `<span class="success">${data.message}</span>`;
+                        atualizarResumoComCupom(data.desconto, data.total_final);
+                    } else {
+                        messageDiv.innerHTML = `<span class="error">${data.message}</span>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    messageDiv.innerHTML = '<span class="error">Erro ao aplicar cupom</span>';
+                });
         }
 
         function atualizarResumoComCupom(desconto, totalFinal) {
@@ -220,10 +267,26 @@ if ($user_id) {
 
         function finalizarCompra() {
             if (confirm('Tem certeza que deseja finalizar a compra?')) {
-                fetch('carrinho_action.php', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'acao=finalizar_compra' })
-                .then(response => response.json())
-                .then(data => { if (data.success) { alert(`Compra finalizada com sucesso!\nCódigo do pedido: ${data.codigo_pedido}`); location.reload(); } else { alert('Erro: ' + data.message); } })
-                .catch(error => { console.error('Erro:', error); alert('Erro ao finalizar compra'); });
+                fetch('carrinho_action.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'acao=finalizar_compra'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Compra finalizada com sucesso!\nCódigo do pedido: ${data.codigo_pedido}`);
+                            location.reload();
+                        } else {
+                            alert('Erro: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        alert('Erro ao finalizar compra');
+                    });
             }
         }
     </script>

@@ -1,29 +1,23 @@
 <?php require_once __DIR__ . '/session.php'; ?>
 <?php
-// Arquivo: login.php
 
-// Incluir Conexão
-// Assume-se que 'connection.php' define a variável de conexão como $conn
 require_once 'connection.php';
 
 $error = '';
 $success = '';
-$email_input = ''; // Para repopular o campo email
+$email_input = '';
 
-// Verifica se há uma mensagem de sucesso do registro
 if (isset($_GET['registered']) && $_GET['registered'] == 'success') {
     $success = "Conta criada com sucesso! Faça login para continuar.";
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Coletar e Limpar Dados do Formulário
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    $email_input = htmlspecialchars($email); // Repopula o campo em caso de erro
+    $email_input = htmlspecialchars($email);
 
-    // 2. Validação e Busca no Banco
     if (empty($email) || empty($password)) {
         $error = "Por favor, preencha todos os campos.";
     } else {
@@ -38,29 +32,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($result->num_rows === 1) {
                 $user = $result->fetch_assoc();
 
-                // 3. Verificação de Senha e Status
-                // Checa a senha usando o hash
                 if (password_verify($password, $user['senha'])) {
 
                     if ($user['status_conta'] !== 'Ativo') {
                         $error = "Sua conta está inativa ou bloqueada. Contate o suporte.";
                     } else {
-                        // 4. Login Bem-sucedido: Armazena dados na sessão
                         $_SESSION['loggedin'] = TRUE;
                         $_SESSION['user_id'] = $user['id_usuario'];
                         $_SESSION['primeiro_nome'] = $user['primeiro_nome'];
                         $_SESSION['cargo'] = $user['cargo'];
 
-                        // 5. Redirecionamento para a página principal
                         header("Location: index.php");
                         exit();
                     }
                 } else {
-                    // Senha incorreta
                     $error = "Email ou senha incorretos.";
                 }
             } else {
-                // Email não encontrado
                 $error = "Email ou senha incorretos.";
             }
             $stmt->close();
@@ -69,7 +57,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
-// Fecha a conexão
 if (isset($conn)) {
     $conn->close();
 }

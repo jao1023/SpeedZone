@@ -1,17 +1,17 @@
-/* Geral */
+
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #f0f2f5;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Alinhar ao topo, pois o conteúdo pode ser maior */
+    align-items: flex-start; 
     min-height: 100vh;
     margin: 0;
     padding: 20px;
     box-sizing: border-box;
 }
 
-/* Botão de Voltar */
+
 .back-btn {
     position: absolute;
     top: 25px;
@@ -28,7 +28,7 @@ body {
     color: #135c16;
 }
 
-/* Container Principal */
+
 .container {
     width: 100%;
     max-width: 800px;
@@ -48,7 +48,7 @@ body {
     text-align: center;
 }
 
-/* Seções de Configuração */
+
 .config-section {
     margin-bottom: 40px;
 }
@@ -104,7 +104,6 @@ body {
     flex: 1;
 }
 
-/* Botões */
 .edit-btn, .save-btn {
     width: 100%;
     padding: 15px;
@@ -122,7 +121,6 @@ body {
     background-color: #135c16;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .container {
         padding: 25px;
